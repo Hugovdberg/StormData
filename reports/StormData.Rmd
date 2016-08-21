@@ -1,0 +1,92 @@
+---
+title: "Impact of Storm Events on Public Health and Economics"
+author: "Hugo van den Berg"
+date: "August 21, 2016"
+output: 
+    html_document:
+      keep_md: yes
+      toc: yes
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+knitr::opts_knit$set(root.dir = file.path(getwd(), '..'))
+```
+
+## Synopsis
+
+In this report we aim to identify the impact of storm events on public health
+and economics from (a subset of) the [NOAA Storm Database][1], collected
+between 1950 and 2011.
+
+## 1. Data Processing
+
+### 1.1 Libraries
+
+For this analysis we used a range of libraries, which are listed below with
+their respective version numbers.
+Note this block was weaved with the option `message=FALSE` to hide startup
+messages.
+
+```{r load_libs, message=FALSE}
+# Reading data
+library(readr) # v1.0.0
+
+# Munging data
+library(magrittr) # v1.5
+library(tidyr) # v0.6.0
+library(plyr) # v1.8.4
+library(dplyr) # v0.5.0
+library(lubridate) # v1.5.6
+
+# Imputation
+library(mice) # v2.25
+
+# Plotting data
+library(ggplot2) # v2.1.0
+```
+
+### 1.2 Raw data collection
+
+The [NOAA Storm Database][1] is publicly available but for this report make use
+of a dedicated subset specially provided for the Coursera course *[Reproducible
+Research][2]*.
+To speed up processing the data an intermediate file is generated 
+
+```{r get_data}
+data.url <- paste0('https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2F',
+                   'StormData.csv.bz2')
+data.raw <- file.path('data', 'StormData.csv.bz2')
+data.prep <- file.path('cache', 'StormData.csv')
+useCache <- file.exists(data.prep)
+if (useCache) {
+    data <- read_csv(data.prep)
+} else {
+    if (!file.exists(data.raw)) {
+        download.file(url = data.url, destfile = data.raw, mode = "wb")
+    }
+    
+    data <- read_csv(file = data.raw,
+                     col_types = 'dcccdcccdccccdcdccdddddddcdccccddddcc',
+                     progress = FALSE)
+}
+```
+Test
+```{r}
+if (!useCache) {
+    write_csv(data[sample(1:nrow(data), 10000, replace = FALSE),], data.prep)
+}
+summary(data)
+```
+
+### 1.3 Cleaning the data
+
+The raw data contains various variables that are not in optimal form to perform
+further analyses.
+
+
+## 2. Results
+
+
+[1]: http://www.ncdc.noaa.gov/stormevents/ 
+[2]: https://www.coursera.org/learn/reproducible-research
