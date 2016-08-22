@@ -3,8 +3,7 @@ title: "Storm Data - Code Book"
 author: "Hugo van den Berg"
 date: "August 21, 2016"
 output: 
-    html_document:
-        keep_md: true
+    github_document:
         toc: true
         toc_depth: 2
 ---
