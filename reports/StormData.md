@@ -6,7 +6,7 @@ August 21, 2016
 
 ## Synopsis
 
-In this report we aim to identify the impact of storm events on public health
+In this report I aim to identify the impact of storm events on public health
 and economics from (a subset of) the [NOAA Storm Database][1], collected
 between 1950 and 2011.
 
@@ -66,7 +66,23 @@ further analyses.
 
 #### Dates
 
-Dates in the original data are scattered over a number of variables
+Dates in the original data are scattered over a number of variables, describing
+dates in various different timezones.
+To create uniform dates, that can be handled consistently, all dates and times
+are converted to `POSIXct` objects.
+
+Unfortunately timezones are hard to get right, and the conversion functions
+don't support reading the timezone from the inputstring.
+Therefore the dataset is split along the `TIME_ZONE` variable, after which for
+each split the dates are converted before merging the data back together.
+
+
+```r
+date.data <- split(x = data, f = toupper(data$TIME_ZONE))
+for (tz in seq_along(date.data)) {
+    date.data[tz] %>% class
+}
+```
 
 #### Event types
 

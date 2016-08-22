@@ -4,7 +4,8 @@ author: "Hugo van den Berg"
 date: "August 21, 2016"
 output: 
     html_document:
-      keep_md: yes
+      toc: yes
+    github_document:
       toc: yes
 ---
 
@@ -17,7 +18,7 @@ config.base.url <- 'https://github.com/Hugovdberg/StormData/blob/master/'
 
 ## Synopsis
 
-In this report we aim to identify the impact of storm events on public health
+In this report I aim to identify the impact of storm events on public health
 and economics from (a subset of) the [NOAA Storm Database][1], collected
 between 1950 and 2011.
 
@@ -75,7 +76,44 @@ further analyses.
 
 #### Dates
 
-Dates in the original data are scattered over a number of variables
+Dates in the original data are scattered over a number of variables, describing
+dates in various different timezones.
+To create uniform dates, that can be handled consistently, all dates and times
+are converted to `POSIXct` objects.
+
+Unfortunately timezones are hard to get right, and the conversion functions
+don't support reading the timezone from the inputstring.
+Therefore the dataset is split along the `TIME_ZONE` variable, after which for
+each split the dates are converted before merging the data back together.
+
+```{r date_convert}
+date.data <- split(x = data, f = toupper(data$TIME_ZONE))
+# data$begin.date <- NA
+for (tz in seq_along(date.data)) {
+    date.data[[tz]] %<>%
+        separate("BGN_DATE", "BGN_DATE_", sep = " ", extra = "drop") %>%
+        mutate(BGN_TIME_ = substr(gsub(':', '', BGN_TIME), 1, 4),
+               begin.date = as.POSIXct(paste(BGN_DATE_, BGN_TIME_),
+                                       format = '%m/%d/%Y %H%M',
+                                       tz = TIME_ZONE[1]))
+}
+# for (tz in seq(nrow(data))) {
+#     form <- if (grepl('^\\d{4}$', data$BGN_TIME[tz], perl = T)) {
+#         '%m/%d/%Y %H%M'
+#     } else if (grepl('^\\d{2}:\\d{2}:\\d{2} (AM|PM)$', 
+#                      data$BGN_TIME[tz], perl = T)) {
+#         '%m/%d/%Y %H:%M:%S' 
+#     } else {
+#         stop('Unknown time format for ', data$BGN_TIME[tz])
+#     }
+#     data$begin.date[tz] <- 
+#         with(data[tz, ], as.POSIXct(paste(strsplit(BGN_DATE, ' ')[[1]][1],
+#                                           BGN_TIME),
+#                                     format = form,
+#                                     tz = TIME_ZONE))
+# }
+data <- bind_rows(date.data)
+```
 
 #### Event types
 
