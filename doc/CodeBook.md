@@ -71,7 +71,7 @@ of the other 22 values was inferred.
 Below is the ammended list of the used codes with their full description.
 
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Mon Aug 22 20:49:19 2016 -->
+<!-- Mon Aug 22 21:19:31 2016 -->
 <table >
 <tr> <th> State Code </th> <th> State Name </th>  </tr>
   <tr> <td> AL </td> <td> Alabama </td> </tr>
@@ -138,7 +138,7 @@ A large number of misspelled eventtypes was present.
 The mapping below has been used to create uniform event types.
 
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Mon Aug 22 20:49:19 2016 -->
+<!-- Mon Aug 22 21:19:31 2016 -->
 <table >
 <tr> <th> Event type (original) </th> <th> Event type (unified) </th>  </tr>
   <tr> <td> ? </td> <td> Unknown </td> </tr>
@@ -1242,10 +1242,20 @@ It contains 272 unique values ranging from 0 to 3749.
 
 ## Preprocessed data
 
-### event.type
+### event.type.major
 
-`event.type` is a factor variable containing the uniform event types, based on
-the original [EVTYPE](#evtype) and the listed transformations.
+`event.type.major` is a factor variable containing uniform event types,
+based on the original [EVTYPE](#evtype) and the listed transformations.
+They contain only the part before the first "/" in the original variable.
+`event.type.major` contains 485 unique values, ranging from "Abnormally dry" to
+"Winter weather mix".
+
+### event.type.minor
+
+`event.type.minor` is a factor variable containing the minor event types,
+based on the original [EVTYPE](#evtype) and the listed transformations.
+`event.type.minor` contains 98 distinct values, ranging from "Awning" to
+"Winter storm".
 
 ### state
 

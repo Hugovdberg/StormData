@@ -235,10 +235,20 @@ It contains 272 unique values ranging from 0 to 3749.
 
 ## Preprocessed data
 
-### event.type
+### event.type.major
 
-`event.type` is a factor variable containing the uniform event types, based on
-the original [EVTYPE](#evtype) and the listed transformations.
+`event.type.major` is a factor variable containing uniform event types,
+based on the original [EVTYPE](#evtype) and the listed transformations.
+They contain only the part before the first "/" in the original variable.
+`event.type.major` contains 485 unique values, ranging from "Abnormally dry" to
+"Winter weather mix".
+
+### event.type.minor
+
+`event.type.minor` is a factor variable containing the minor event types,
+based on the original [EVTYPE](#evtype) and the listed transformations.
+`event.type.minor` contains 98 distinct values, ranging from "Awning" to
+"Winter storm".
 
 ### state
 
