@@ -290,6 +290,10 @@ the weather event.
 
 ### begin.latitude
 
+`begin.latitude` is a numeric variable describing the latitude at which the
+weather event started.
+It ranges from 7.06 to 70.25.
+
 ### begin.longitude
 
 ### end.date

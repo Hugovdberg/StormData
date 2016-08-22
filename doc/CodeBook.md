@@ -36,7 +36,7 @@ Original data
 Timezones are inherently difficult to work with, and three letter POSIX codes cannot be uniquely mapped to the Olson timezone names R uses. Therefore the codes have been mapped manually to a suitable Olson timezone:
 
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Tue Aug 23 01:19:03 2016 -->
+<!-- Tue Aug 23 01:46:11 2016 -->
 <table>
 <tr>
 <th>
@@ -2894,7 +2894,7 @@ UTC
 Using the combination of state code and [countyname](#countyname) the meaning of the other 22 values was inferred. Below is the ammended list of the used codes with their full description.
 
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Tue Aug 23 01:19:03 2016 -->
+<!-- Tue Aug 23 01:46:11 2016 -->
 <table>
 <tr>
 <th>
@@ -3354,7 +3354,7 @@ Marshall Islands
 A large number of misspelled eventtypes was present. The mapping below has been used to create uniform event types.
 
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Tue Aug 23 01:19:03 2016 -->
+<!-- Tue Aug 23 01:46:11 2016 -->
 <table>
 <tr>
 <th>
@@ -11321,6 +11321,8 @@ Preprocessed data
 ### begin.county
 
 ### begin.latitude
+
+`begin.latitude` is a numeric variable describing the latitude at which the weather event started. It ranges from 7.06 to 70.25.
 
 ### begin.longitude
 
