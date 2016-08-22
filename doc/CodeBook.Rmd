@@ -60,6 +60,21 @@ It should be used together with [BGN_DATE](#bgn_date) and
 `TIME_ZONE` is a three letter code describing the timezone in which the event
 occurred.
 
+Timezones are inherently difficult to work with, and three letter POSIX codes
+cannot be uniquely mapped to the Olson timezone names R uses.
+Therefore the codes have been mapped manually to a suitable Olson timezone:
+
+```{r tz, results='asis'}
+source(file.path('doc', 'TZ.R'))
+write_csv(TZ, file.path('data', 'TZ.csv'))
+xTZ <- xtable(TZ)
+names(xTZ) <- c("Time Zone", "State Code", "Olson/IANA Timezone")
+print(xTZ, type = "html", include.rownames = FALSE,
+      html.table.attributes = "")
+```
+
+*This table is available in [TZ.csv](../data/TZ.csv)*
+
 ### COUNTY
 
 `COUNTY` is a numeric variable ranging from 0 to 873, describing the county in
@@ -84,16 +99,15 @@ of the other 22 values was inferred.
 Below is the ammended list of the used codes with their full description.
 
 ```{r state, results='asis'}
-STATE <- data.frame(
-    from = c(state.abb, "GU"),
-    to = c(state.name, "Guam")
-    )
+source(file.path('doc', 'STATE.R'))
 write_csv(STATE, file.path('data', 'STATE.csv'))
 xSTATE <- xtable(STATE)
-names(xSTATE) <- c("State Code", "State Name")
+names(xSTATE) <- c("State Code", "Region Name")
 print(xSTATE, type = "html", include.rownames = FALSE,
       html.table.attributes = "")
 ```
+
+*This table is available in [STATE.csv](../data/STATE.csv)*
 
 ### EVTYPE
 
@@ -258,9 +272,19 @@ based on the original [EVTYPE](#evtype) and the listed transformations.
 unique values, ranging from "`r min(EVTYPE$event.type.minor, na.rm = T)`" to 
 "`r max(EVTYPE$event.type.minor, na.rm = T)`".
 
-### state
+### region
+
+`region` is a factor variable containing the region in which the weather event
+occurred.
+For the most regions this is a state name, but several non-state regions have
+been identified as well.
+The data is based on the [STATE](#state) variable, see the corresponding
+section for the mapping from state code to region name.
 
 ### begin.date
+
+`begin.date` is a POSIXct object containing the date and time at the start of
+the weather event.
 
 ### begin.county
 
