@@ -152,6 +152,7 @@ library(tidyr) # v0.6.0
 library(plyr) # v1.8.4
 library(dplyr) # v0.5.0
 library(lubridate) # v1.5.6
+library(stringr) # v1.1.0
 
 # Imputation
 library(mice) # v2.25
@@ -161,135 +162,36 @@ library(ggplot2) # v2.1.0</code></pre>
 </div>
 <div id="raw-data-collection" class="section level3">
 <h3>1.2 Raw data collection</h3>
-<p>The <a href="http://www.ncdc.noaa.gov/stormevents/">NOAA Storm Database</a> is publicly available but for this report make use of a dedicated subset specially provided for the Coursera course <em><a href="https://www.coursera.org/learn/reproducible-research">Reproducible Research</a></em>. To speed up processing the data an intermediate file is generated</p>
+<p>The <a href="http://www.ncdc.noaa.gov/stormevents/">NOAA Storm Database</a> is publicly available but for this report make use of a dedicated subset specially provided for the Coursera course <em><a href="https://www.coursera.org/learn/reproducible-research">Reproducible Research</a></em>.</p>
 <pre class="r"><code>data.url &lt;- paste0('https://d396qusza40orc.cloudfront.net/repdata%2Fdata%2F',
                    'StormData.csv.bz2')
 data.raw &lt;- file.path('data', 'StormData.csv.bz2')
-data.prep &lt;- file.path('cache', 'StormData.csv')
-useCache &lt;- file.exists(data.prep)
-if (useCache) {
-    data &lt;- read_csv(data.prep)
-} else {
-    if (!file.exists(data.raw)) {
-        download.file(url = data.url, destfile = data.raw, mode = &quot;wb&quot;)
-    }
-    
-    data &lt;- read_csv(file = data.raw,
-                     col_types = 'dcccdcccdccccdcdccdddddddcdccccddddcc',
-                     progress = FALSE)
-}</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   .default = col_character(),
-##   STATE__ = col_double(),
-##   COUNTY = col_double(),
-##   BGN_RANGE = col_double(),
-##   COUNTY_END = col_double(),
-##   END_RANGE = col_double(),
-##   LENGTH = col_double(),
-##   WIDTH = col_double(),
-##   F = col_double(),
-##   MAG = col_double(),
-##   FATALITIES = col_double(),
-##   INJURIES = col_double(),
-##   PROPDMG = col_double(),
-##   CROPDMG = col_double(),
-##   LATITUDE = col_double(),
-##   LONGITUDE = col_double(),
-##   LATITUDE_E = col_double(),
-##   LONGITUDE_ = col_double(),
-##   REFNUM = col_double()
-## )</code></pre>
-<pre><code>## See spec(...) for full column specifications.</code></pre>
-<p>Test</p>
-<pre class="r"><code>if (!useCache) {
-    write_csv(data[sample(1:nrow(data), 10000, replace = FALSE),], data.prep)
+if (!file.exists(data.raw)) {
+    download.file(url = data.url, destfile = data.raw, mode = &quot;wb&quot;)
 }
-summary(data)</code></pre>
-<pre><code>##     STATE__        BGN_DATE           BGN_TIME          TIME_ZONE        
-##  Min.   : 1.00   Length:10000       Length:10000       Length:10000      
-##  1st Qu.:19.00   Class :character   Class :character   Class :character  
-##  Median :30.00   Mode  :character   Mode  :character   Mode  :character  
-##  Mean   :31.27                                                           
-##  3rd Qu.:45.00                                                           
-##  Max.   :95.00                                                           
-##                                                                          
-##      COUNTY     COUNTYNAME           STATE              EVTYPE         
-##  Min.   :  0   Length:10000       Length:10000       Length:10000      
-##  1st Qu.: 31   Class :character   Class :character   Class :character  
-##  Median : 75   Mode  :character   Mode  :character   Mode  :character  
-##  Mean   :101                                                           
-##  3rd Qu.:129                                                           
-##  Max.   :856                                                           
-##                                                                        
-##    BGN_RANGE        BGN_AZI           BGN_LOCATI          END_DATE        
-##  Min.   : 0.000   Length:10000       Length:10000       Length:10000      
-##  1st Qu.: 0.000   Class :character   Class :character   Class :character  
-##  Median : 0.000   Mode  :character   Mode  :character   Mode  :character  
-##  Mean   : 1.501                                                           
-##  3rd Qu.: 1.000                                                           
-##  Max.   :70.000                                                           
-##                                                                           
-##    END_TIME           COUNTY_END  COUNTYENDN          END_RANGE     
-##  Length:10000       Min.   :0    Length:10000       Min.   : 0.000  
-##  Class :character   1st Qu.:0    Class :character   1st Qu.: 0.000  
-##  Mode  :character   Median :0    Mode  :character   Median : 0.000  
-##                     Mean   :0                       Mean   : 1.009  
-##                     3rd Qu.:0                       3rd Qu.: 0.000  
-##                     Max.   :0                       Max.   :70.000  
-##                                                                     
-##    END_AZI           END_LOCATI            LENGTH        
-##  Length:10000       Length:10000       Min.   :  0.0000  
-##  Class :character   Class :character   1st Qu.:  0.0000  
-##  Mode  :character   Mode  :character   Median :  0.0000  
-##                                        Mean   :  0.2131  
-##                                        3rd Qu.:  0.0000  
-##                                        Max.   :118.8000  
-##                                                          
-##      WIDTH                F              MAG           FATALITIES     
-##  Min.   :   0.000   Min.   :0.000   Min.   :  0.00   Min.   : 0.0000  
-##  1st Qu.:   0.000   1st Qu.:0.000   1st Qu.:  0.00   1st Qu.: 0.0000  
-##  Median :   0.000   Median :1.000   Median : 50.00   Median : 0.0000  
-##  Mean   :   6.956   Mean   :0.948   Mean   : 46.88   Mean   : 0.0125  
-##  3rd Qu.:   0.000   3rd Qu.:1.000   3rd Qu.: 75.00   3rd Qu.: 0.0000  
-##  Max.   :2500.000   Max.   :5.000   Max.   :600.00   Max.   :11.0000  
-##                     NA's   :9379                                      
-##     INJURIES          PROPDMG        PROPDMGEXP           CROPDMG      
-##  Min.   :  0.000   Min.   :  0.00   Length:10000       Min.   :  0.00  
-##  1st Qu.:  0.000   1st Qu.:  0.00   Class :character   1st Qu.:  0.00  
-##  Median :  0.000   Median :  0.00   Mode  :character   Median :  0.00  
-##  Mean   :  0.101   Mean   : 12.09                      Mean   :  1.48  
-##  3rd Qu.:  0.000   3rd Qu.:  0.70                      3rd Qu.:  0.00  
-##  Max.   :200.000   Max.   :995.00                      Max.   :850.00  
-##                                                                        
-##   CROPDMGEXP            WFO             STATEOFFIC       
-##  Length:10000       Length:10000       Length:10000      
-##  Class :character   Class :character   Class :character  
-##  Mode  :character   Mode  :character   Mode  :character  
-##                                                          
-##                                                          
-##                                                          
-##                                                          
-##   ZONENAMES            LATITUDE      LONGITUDE       LATITUDE_E  
-##  Length:10000       Min.   :   0   Min.   :    0   Min.   :   0  
-##  Class :character   1st Qu.:2626   1st Qu.: 7115   1st Qu.:   0  
-##  Mode  :character   Median :3534   Median : 8644   Median :   0  
-##                     Mean   :2851   Mean   : 6872   Mean   :1425  
-##                     3rd Qu.:4017   3rd Qu.: 9600   3rd Qu.:3533  
-##                     Max.   :6247   Max.   :17031   Max.   :6248  
-##                     NA's   :1                      NA's   :1     
-##    LONGITUDE_      REMARKS              REFNUM      
-##  Min.   :    0   Length:10000       Min.   :    86  
-##  1st Qu.:    0   Class :character   1st Qu.:225988  
-##  Median :    0   Mode  :character   Median :449886  
-##  Mean   : 3446                      Mean   :452061  
-##  3rd Qu.: 8704                      3rd Qu.:678959  
-##  Max.   :17052                      Max.   :902282  
-## </code></pre>
+
+data &lt;- read_csv(file = data.raw,
+                 col_types = 'dcccdcccdccccdcdccdddddddcdccccddddcc',
+                 progress = FALSE)</code></pre>
 </div>
 <div id="cleaning-the-data" class="section level3">
 <h3>1.3 Cleaning the data</h3>
 <p>The raw data contains various variables that are not in optimal form to perform further analyses.</p>
+<div id="dates" class="section level4">
+<h4>Dates</h4>
+<p>Dates in the original data are scattered over a number of variables</p>
+</div>
+<div id="event-types" class="section level4">
+<h4>Event types</h4>
+<p>The event types contain a lot of misspelled event types. The <a href="https://github.com/Hugovdberg/StormData/blob/master/doc/CodeBook.md">codebook</a> describes a list of all event types in the <code>EVTYPE</code> variable and a mapping to more consistent names, which is stored in <a href="https://github.com/Hugovdberg/StormData/blob/master/data/EVTYPE.csv">EVTYPE.csv</a>. After renaming the event types they are split on the “/”-character into a major and minor event type, under the assumption that the major event type is listed first in the <code>EVTYPE</code> variable.</p>
+<pre class="r"><code>evtypes &lt;- read_csv(file.path('data', 'EVTYPE.csv'), col_types = 'cc')
+data %&lt;&gt;% 
+    mutate(EVTYPE = mapvalues(EVTYPE, 
+                              from = evtypes$from, 
+                              to = evtypes$to)) %&gt;%
+    separate(EVTYPE, into = c(&quot;event.type.major&quot;, &quot;event.type.minor&quot;), 
+             sep = '/', extra = 'merge', fill = &quot;right&quot;)</code></pre>
+</div>
 </div>
 </div>
 <div id="results" class="section level2">
