@@ -71,7 +71,7 @@ of the other 22 values was inferred.
 Below is the ammended list of the used codes with their full description.
 
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Mon Aug 22 21:19:31 2016 -->
+<!-- Mon Aug 22 21:32:15 2016 -->
 <table >
 <tr> <th> State Code </th> <th> State Name </th>  </tr>
   <tr> <td> AL </td> <td> Alabama </td> </tr>
@@ -138,7 +138,7 @@ A large number of misspelled eventtypes was present.
 The mapping below has been used to create uniform event types.
 
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Mon Aug 22 21:19:31 2016 -->
+<!-- Mon Aug 22 21:32:15 2016 -->
 <table >
 <tr> <th> Event type (original) </th> <th> Event type (unified) </th>  </tr>
   <tr> <td> ? </td> <td> Unknown </td> </tr>
@@ -377,25 +377,25 @@ The mapping below has been used to create uniform event types.
   <tr> <td> Gusty Winds </td> <td> Gusty wind </td> </tr>
   <tr> <td> GUSTY WINDS </td> <td> Gusty wind </td> </tr>
   <tr> <td> HAIL </td> <td> Hail </td> </tr>
-  <tr> <td> Hail(0.75) </td> <td> Hail 0.75 </td> </tr>
-  <tr> <td> HAIL 075 </td> <td> Hail 0.75 </td> </tr>
-  <tr> <td> HAIL 0.75 </td> <td> Hail 0.75 </td> </tr>
-  <tr> <td> HAIL 088 </td> <td> Hail 0.88 </td> </tr>
-  <tr> <td> HAIL 0.88 </td> <td> Hail 0.88 </td> </tr>
-  <tr> <td> HAIL 100 </td> <td> Hail 1.00 </td> </tr>
-  <tr> <td> HAIL 1.00 </td> <td> Hail 1.00 </td> </tr>
-  <tr> <td> HAIL 125 </td> <td> Hail 1.25 </td> </tr>
-  <tr> <td> HAIL 150 </td> <td> Hail 1.50 </td> </tr>
-  <tr> <td> HAIL 175 </td> <td> Hail 1.75 </td> </tr>
-  <tr> <td> HAIL 1.75 </td> <td> Hail 1.75 </td> </tr>
-  <tr> <td> HAIL 1.75) </td> <td> Hail 1.75) </td> </tr>
-  <tr> <td> HAIL 200 </td> <td> Hail 2.00 </td> </tr>
-  <tr> <td> HAIL 225 </td> <td> Hail 2.25 </td> </tr>
-  <tr> <td> HAIL 275 </td> <td> Hail 2.75 </td> </tr>
-  <tr> <td> HAIL 450 </td> <td> Hail 4.50 </td> </tr>
-  <tr> <td> HAIL 75 </td> <td> Hail 0.75 </td> </tr>
-  <tr> <td> HAIL 80 </td> <td> Hail 0.80 </td> </tr>
-  <tr> <td> HAIL 88 </td> <td> Hail 0.88 </td> </tr>
+  <tr> <td> Hail(0.75) </td> <td> Hail 0.75" </td> </tr>
+  <tr> <td> HAIL 075 </td> <td> Hail 0.75" </td> </tr>
+  <tr> <td> HAIL 0.75 </td> <td> Hail 0.75" </td> </tr>
+  <tr> <td> HAIL 088 </td> <td> Hail 0.88" </td> </tr>
+  <tr> <td> HAIL 0.88 </td> <td> Hail 0.88" </td> </tr>
+  <tr> <td> HAIL 100 </td> <td> Hail 1.00" </td> </tr>
+  <tr> <td> HAIL 1.00 </td> <td> Hail 1.00" </td> </tr>
+  <tr> <td> HAIL 125 </td> <td> Hail 1.25" </td> </tr>
+  <tr> <td> HAIL 150 </td> <td> Hail 1.50" </td> </tr>
+  <tr> <td> HAIL 175 </td> <td> Hail 1.75" </td> </tr>
+  <tr> <td> HAIL 1.75 </td> <td> Hail 1.75" </td> </tr>
+  <tr> <td> HAIL 1.75) </td> <td> Hail 1.75" </td> </tr>
+  <tr> <td> HAIL 200 </td> <td> Hail 2.00" </td> </tr>
+  <tr> <td> HAIL 225 </td> <td> Hail 2.25" </td> </tr>
+  <tr> <td> HAIL 275 </td> <td> Hail 2.75" </td> </tr>
+  <tr> <td> HAIL 450 </td> <td> Hail 4.50" </td> </tr>
+  <tr> <td> HAIL 75 </td> <td> Hail 0.75" </td> </tr>
+  <tr> <td> HAIL 80 </td> <td> Hail 0.80" </td> </tr>
+  <tr> <td> HAIL 88 </td> <td> Hail 0.88" </td> </tr>
   <tr> <td> HAIL ALOFT </td> <td> Hail aloft </td> </tr>
   <tr> <td> HAIL DAMAGE </td> <td> Hail damage </td> </tr>
   <tr> <td> HAIL FLOODING </td> <td> Hail flooding </td> </tr>
@@ -1244,17 +1244,20 @@ It contains 272 unique values ranging from 0 to 3749.
 
 ### event.type.major
 
+
 `event.type.major` is a factor variable containing uniform event types,
 based on the original [EVTYPE](#evtype) and the listed transformations.
 They contain only the part before the first "/" in the original variable.
-`event.type.major` contains 485 unique values, ranging from "Abnormally dry" to
+`event.type.major` contains 484
+unique values, ranging from "Abnormally dry" to 
 "Winter weather mix".
 
 ### event.type.minor
 
 `event.type.minor` is a factor variable containing the minor event types,
 based on the original [EVTYPE](#evtype) and the listed transformations.
-`event.type.minor` contains 98 distinct values, ranging from "Awning" to
+`event.type.minor` contains 98
+unique values, ranging from "Awning" to 
 "Winter storm".
 
 ### state

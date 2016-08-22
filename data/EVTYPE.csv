@@ -235,25 +235,25 @@ Gusty winds,Gusty wind
 Gusty Winds,Gusty wind
 GUSTY WINDS,Gusty wind
 HAIL,Hail
-Hail(0.75),Hail 0.75
-HAIL 075,Hail 0.75
-HAIL 0.75,Hail 0.75
-HAIL 088,Hail 0.88
-HAIL 0.88,Hail 0.88
-HAIL 100,Hail 1.00
-HAIL 1.00,Hail 1.00
-HAIL 125,Hail 1.25
-HAIL 150,Hail 1.50
-HAIL 175,Hail 1.75
-HAIL 1.75,Hail 1.75
-HAIL 1.75),Hail 1.75)
-HAIL 200,Hail 2.00
-HAIL 225,Hail 2.25
-HAIL 275,Hail 2.75
-HAIL 450,Hail 4.50
-HAIL 75,Hail 0.75
-HAIL 80,Hail 0.80
-HAIL 88,Hail 0.88
+Hail(0.75),"Hail 0.75"""
+HAIL 075,"Hail 0.75"""
+HAIL 0.75,"Hail 0.75"""
+HAIL 088,"Hail 0.88"""
+HAIL 0.88,"Hail 0.88"""
+HAIL 100,"Hail 1.00"""
+HAIL 1.00,"Hail 1.00"""
+HAIL 125,"Hail 1.25"""
+HAIL 150,"Hail 1.50"""
+HAIL 175,"Hail 1.75"""
+HAIL 1.75,"Hail 1.75"""
+HAIL 1.75),"Hail 1.75"""
+HAIL 200,"Hail 2.00"""
+HAIL 225,"Hail 2.25"""
+HAIL 275,"Hail 2.75"""
+HAIL 450,"Hail 4.50"""
+HAIL 75,"Hail 0.75"""
+HAIL 80,"Hail 0.80"""
+HAIL 88,"Hail 0.88"""
 HAIL ALOFT,Hail aloft
 HAIL DAMAGE,Hail damage
 HAIL FLOODING,Hail flooding

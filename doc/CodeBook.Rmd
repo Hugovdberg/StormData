@@ -14,6 +14,8 @@ knitr::opts_chunk$set(echo = FALSE)
 knitr::opts_knit$set(root.dir = file.path(getwd(), '..'))
 library(readr)
 library(xtable)
+library(magrittr)
+library(tidyr)
 ```
 
 ## Introduction
@@ -237,18 +239,25 @@ It contains 272 unique values ranging from 0 to 3749.
 
 ### event.type.major
 
+```{r etma}
+EVTYPE %<>% separate(to, c("event.type.major", "event.type.minor"),
+                     sep = "/", extra = "merge", fill = "right", 
+                     remove = FALSE)
+```
 `event.type.major` is a factor variable containing uniform event types,
 based on the original [EVTYPE](#evtype) and the listed transformations.
 They contain only the part before the first "/" in the original variable.
-`event.type.major` contains 485 unique values, ranging from "Abnormally dry" to
-"Winter weather mix".
+`event.type.major` contains `r length(unique(EVTYPE$event.type.major))`
+unique values, ranging from "`r min(EVTYPE$event.type.major, na.rm = T)`" to 
+"`r max(EVTYPE$event.type.major, na.rm = T)`".
 
 ### event.type.minor
 
 `event.type.minor` is a factor variable containing the minor event types,
 based on the original [EVTYPE](#evtype) and the listed transformations.
-`event.type.minor` contains 98 distinct values, ranging from "Awning" to
-"Winter storm".
+`event.type.minor` contains `r length(unique(EVTYPE$event.type.minor))`
+unique values, ranging from "`r min(EVTYPE$event.type.minor, na.rm = T)`" to 
+"`r max(EVTYPE$event.type.minor, na.rm = T)`".
 
 ### state
 

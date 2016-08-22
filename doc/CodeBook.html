@@ -166,7 +166,7 @@ $(document).ready(function () {
 <p><code>STATE</code> is a two-letter character variable containing an abbreviated state name. It contains 79 unique values, 50 of which can be related to the built in <code>state.abb</code> variable.</p>
 <p>Using the combination of state code and <a href="#countyname">countyname</a> the meaning of the other 22 values was inferred. Below is the ammended list of the used codes with their full description.</p>
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Mon Aug 22 21:19:31 2016 -->
+<!-- Mon Aug 22 21:32:15 2016 -->
 <table>
 <tr>
 <th>
@@ -591,7 +591,7 @@ Guam
 <p><code>EVTYPE</code> is character variable containing the type of weather event that occurred. It contains 977 unique values (890 unique values ignoring upper/lower case), ranging from “?” to “WND”.</p>
 <p>A large number of misspelled eventtypes was present. The mapping below has been used to create uniform event types.</p>
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Mon Aug 22 21:19:31 2016 -->
+<!-- Mon Aug 22 21:32:15 2016 -->
 <table>
 <tr>
 <th>
@@ -2494,7 +2494,7 @@ Hail
 Hail(0.75)
 </td>
 <td>
-Hail 0.75
+Hail 0.75&quot;
 </td>
 </tr>
 <tr>
@@ -2502,7 +2502,7 @@ Hail 0.75
 HAIL 075
 </td>
 <td>
-Hail 0.75
+Hail 0.75&quot;
 </td>
 </tr>
 <tr>
@@ -2510,7 +2510,7 @@ Hail 0.75
 HAIL 0.75
 </td>
 <td>
-Hail 0.75
+Hail 0.75&quot;
 </td>
 </tr>
 <tr>
@@ -2518,7 +2518,7 @@ Hail 0.75
 HAIL 088
 </td>
 <td>
-Hail 0.88
+Hail 0.88&quot;
 </td>
 </tr>
 <tr>
@@ -2526,7 +2526,7 @@ Hail 0.88
 HAIL 0.88
 </td>
 <td>
-Hail 0.88
+Hail 0.88&quot;
 </td>
 </tr>
 <tr>
@@ -2534,7 +2534,7 @@ Hail 0.88
 HAIL 100
 </td>
 <td>
-Hail 1.00
+Hail 1.00&quot;
 </td>
 </tr>
 <tr>
@@ -2542,7 +2542,7 @@ Hail 1.00
 HAIL 1.00
 </td>
 <td>
-Hail 1.00
+Hail 1.00&quot;
 </td>
 </tr>
 <tr>
@@ -2550,7 +2550,7 @@ Hail 1.00
 HAIL 125
 </td>
 <td>
-Hail 1.25
+Hail 1.25&quot;
 </td>
 </tr>
 <tr>
@@ -2558,7 +2558,7 @@ Hail 1.25
 HAIL 150
 </td>
 <td>
-Hail 1.50
+Hail 1.50&quot;
 </td>
 </tr>
 <tr>
@@ -2566,7 +2566,7 @@ Hail 1.50
 HAIL 175
 </td>
 <td>
-Hail 1.75
+Hail 1.75&quot;
 </td>
 </tr>
 <tr>
@@ -2574,7 +2574,7 @@ Hail 1.75
 HAIL 1.75
 </td>
 <td>
-Hail 1.75
+Hail 1.75&quot;
 </td>
 </tr>
 <tr>
@@ -2582,7 +2582,7 @@ Hail 1.75
 HAIL 1.75)
 </td>
 <td>
-Hail 1.75)
+Hail 1.75&quot;
 </td>
 </tr>
 <tr>
@@ -2590,7 +2590,7 @@ Hail 1.75)
 HAIL 200
 </td>
 <td>
-Hail 2.00
+Hail 2.00&quot;
 </td>
 </tr>
 <tr>
@@ -2598,7 +2598,7 @@ Hail 2.00
 HAIL 225
 </td>
 <td>
-Hail 2.25
+Hail 2.25&quot;
 </td>
 </tr>
 <tr>
@@ -2606,7 +2606,7 @@ Hail 2.25
 HAIL 275
 </td>
 <td>
-Hail 2.75
+Hail 2.75&quot;
 </td>
 </tr>
 <tr>
@@ -2614,7 +2614,7 @@ Hail 2.75
 HAIL 450
 </td>
 <td>
-Hail 4.50
+Hail 4.50&quot;
 </td>
 </tr>
 <tr>
@@ -2622,7 +2622,7 @@ Hail 4.50
 HAIL 75
 </td>
 <td>
-Hail 0.75
+Hail 0.75&quot;
 </td>
 </tr>
 <tr>
@@ -2630,7 +2630,7 @@ Hail 0.75
 HAIL 80
 </td>
 <td>
-Hail 0.80
+Hail 0.80&quot;
 </td>
 </tr>
 <tr>
@@ -2638,7 +2638,7 @@ Hail 0.80
 HAIL 88
 </td>
 <td>
-Hail 0.88
+Hail 0.88&quot;
 </td>
 </tr>
 <tr>
@@ -8541,11 +8541,11 @@ Wind
 <h2>Preprocessed data</h2>
 <div id="event.type.major" class="section level3">
 <h3>event.type.major</h3>
-<p><code>event.type.major</code> is a factor variable containing uniform event types, based on the original <a href="#evtype">EVTYPE</a> and the listed transformations. They contain only the part before the first “/” in the original variable. <code>event.type.major</code> contains 485 unique values, ranging from “Abnormally dry” to “Winter weather mix”.</p>
+<p><code>event.type.major</code> is a factor variable containing uniform event types, based on the original <a href="#evtype">EVTYPE</a> and the listed transformations. They contain only the part before the first “/” in the original variable. <code>event.type.major</code> contains 484 unique values, ranging from “Abnormally dry” to “Winter weather mix”.</p>
 </div>
 <div id="event.type.minor" class="section level3">
 <h3>event.type.minor</h3>
-<p><code>event.type.minor</code> is a factor variable containing the minor event types, based on the original <a href="#evtype">EVTYPE</a> and the listed transformations. <code>event.type.minor</code> contains 98 distinct values, ranging from “Awning” to “Winter storm”.</p>
+<p><code>event.type.minor</code> is a factor variable containing the minor event types, based on the original <a href="#evtype">EVTYPE</a> and the listed transformations. <code>event.type.minor</code> contains 98 unique values, ranging from “Awning” to “Winter storm”.</p>
 </div>
 <div id="state-1" class="section level3">
 <h3>state</h3>
