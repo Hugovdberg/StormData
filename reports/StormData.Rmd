@@ -67,6 +67,8 @@ if (!file.exists(data.raw)) {
 data <- read_csv(file = data.raw,
                  col_types = 'dcccdcccdccccdcdccdddddddcdccccddddcc',
                  progress = FALSE)
+data.backup <- data
+data <- data.backup
 ```
 
 ### 1.3 Cleaning the data
@@ -87,32 +89,32 @@ Therefore the dataset is split along the `TIME_ZONE` variable, after which for
 each split the dates are converted before merging the data back together.
 
 ```{r date_convert}
-date.data <- split(x = data, f = toupper(data$TIME_ZONE))
-# data$begin.date <- NA
+TZ <- read_csv(file.path('data', 'TZ.csv'))
+data %<>% inner_join(TZ)
+date.data <- split(x = data, f = data$timezone)
 for (tz in seq_along(date.data)) {
     date.data[[tz]] %<>%
-        separate("BGN_DATE", "BGN_DATE_", sep = " ", extra = "drop") %>%
-        mutate(BGN_TIME_ = substr(gsub(':', '', BGN_TIME), 1, 4),
+        separate("BGN_DATE", "BGN_DATE_", sep = " ", extra = "drop", remove = F) %>%
+        separate("END_DATE", "END_DATE_", sep = " ", extra = "drop", remove = F) %>%
+        mutate(BGN_TIME_ = ifelse(is.na(BGN_TIME),
+                                  '0000',
+                                  substr(gsub(':', '', BGN_TIME), 1, 4)),
+               END_TIME_ = ifelse(is.na(END_TIME),
+                                  '0000',
+                                  substr(gsub(':', '', END_TIME), 1, 4)),
                begin.date = as.POSIXct(paste(BGN_DATE_, BGN_TIME_),
                                        format = '%m/%d/%Y %H%M',
-                                       tz = TIME_ZONE[1]))
+                                       tz = print(timezone[1])),
+               end.date = as.POSIXct(paste(END_DATE_, END_TIME_),
+                                     format = '%m/%d/%Y %H%M',
+                                     tz = timezone[1])
+               ) #%>%
+        # select(-BGN_DATE, -BGN_DATE_,
+        #        -END_DATE, -END_DATE_,
+        #        -BGN_TIME, -BGN_TIME_,
+        #        -END_TIME, -END_TIME_)
 }
-# for (tz in seq(nrow(data))) {
-#     form <- if (grepl('^\\d{4}$', data$BGN_TIME[tz], perl = T)) {
-#         '%m/%d/%Y %H%M'
-#     } else if (grepl('^\\d{2}:\\d{2}:\\d{2} (AM|PM)$', 
-#                      data$BGN_TIME[tz], perl = T)) {
-#         '%m/%d/%Y %H:%M:%S' 
-#     } else {
-#         stop('Unknown time format for ', data$BGN_TIME[tz])
-#     }
-#     data$begin.date[tz] <- 
-#         with(data[tz, ], as.POSIXct(paste(strsplit(BGN_DATE, ' ')[[1]][1],
-#                                           BGN_TIME),
-#                                     format = form,
-#                                     tz = TIME_ZONE))
-# }
-data <- bind_rows(date.data)
+data <- bind_rows(date.data)# %>% select(-TIME_ZONE)
 ```
 
 #### Event types
@@ -132,12 +134,49 @@ data %<>%
                               from = evtypes$from, 
                               to = evtypes$to)) %>%
     separate(EVTYPE, into = c("event.type.major", "event.type.minor"), 
-             sep = '/', extra = 'merge', fill = "right")
+             sep = '/', extra = 'merge', fill = "right") %>%
+    mutate_at(vars(event.type.major, event.type.minor), funs(as.factor))
 ```
 
+#### States and regions
+
+The `STATE` variable contains a number of non-standard state codes.
+The [codebook][3] describes a list of all state codes and a mapping to
+consistent names for the regions in which the event occurred, which is stored
+in [STATE.csv][5].
+
+```{r region_mapping}
+states <- read_csv(file.path('data', 'STATE.csv'), col_types = 'cc')
+data %<>% 
+    mutate(
+        region = as.factor(mapvalues(STATE,
+                                     from = states$from,
+                                     to = states$to))
+        )
+```
+
+#### Latitude and Longitude
+
+The `LATITUDE`, `LONGITUDE`, `LATITUDE_E`, and `LONGITUDE_` variables contain
+the respective latitude and longitude of the start and end of the weather
+event.
+Both are given in hundreths of degrees, and converted to positive values for
+the longitudes.
+Missing values in the dataset are represented as `0`, these are converted to
+`NA`.
+
+```{r lat_lon}
+data %<>%
+    mutate(begin.latitude = ifelse(LATITUDE, LATITUDE/100, NA),
+           begin.longitude = ifelse(LONGITUDE, -LONGITUDE/100, NA),
+           end.latitude = ifelse(LATITUDE_E, LATITUDE_E/100, NA),
+           end.longitude = ifelse(LONGITUDE_, -LONGITUDE_/100, NA)) %>%
+    select(-LATITUDE, -LATITUDE_E, -LONGITUDE, -LONGITUDE_)
+```
 ## 2. Results
 
 [1]: http://www.ncdc.noaa.gov/stormevents/ 
 [2]: https://www.coursera.org/learn/reproducible-research
 [3]: `r config.base.url`doc/CodeBook.md
 [4]: `r config.base.url`data/EVTYPE.csv
+[5]: `r config.base.url`data/STATE.csv

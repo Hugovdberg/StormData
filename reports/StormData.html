@@ -172,7 +172,9 @@ if (!file.exists(data.raw)) {
 
 data &lt;- read_csv(file = data.raw,
                  col_types = 'dcccdcccdccccdcdccdddddddcdccccddddcc',
-                 progress = FALSE)</code></pre>
+                 progress = FALSE)
+data.backup &lt;- data
+data &lt;- data.backup</code></pre>
 </div>
 <div id="cleaning-the-data" class="section level3">
 <h3>1.3 Cleaning the data</h3>
@@ -181,32 +183,52 @@ data &lt;- read_csv(file = data.raw,
 <h4>Dates</h4>
 <p>Dates in the original data are scattered over a number of variables, describing dates in various different timezones. To create uniform dates, that can be handled consistently, all dates and times are converted to <code>POSIXct</code> objects.</p>
 <p>Unfortunately timezones are hard to get right, and the conversion functions don’t support reading the timezone from the inputstring. Therefore the dataset is split along the <code>TIME_ZONE</code> variable, after which for each split the dates are converted before merging the data back together.</p>
-<pre class="r"><code>date.data &lt;- split(x = data, f = toupper(data$TIME_ZONE))
-# data$begin.date &lt;- NA
+<pre class="r"><code>TZ &lt;- read_csv(file.path('data', 'TZ.csv'))</code></pre>
+<pre><code>## Parsed with column specification:
+## cols(
+##   TIME_ZONE = col_character(),
+##   STATE = col_character(),
+##   timezone = col_character()
+## )</code></pre>
+<pre class="r"><code>data %&lt;&gt;% inner_join(TZ)</code></pre>
+<pre><code>## Joining, by = c(&quot;TIME_ZONE&quot;, &quot;STATE&quot;)</code></pre>
+<pre class="r"><code>date.data &lt;- split(x = data, f = data$timezone)
 for (tz in seq_along(date.data)) {
     date.data[[tz]] %&lt;&gt;%
-        separate(&quot;BGN_DATE&quot;, &quot;BGN_DATE_&quot;, sep = &quot; &quot;, extra = &quot;drop&quot;) %&gt;%
-        mutate(BGN_TIME_ = substr(gsub(':', '', BGN_TIME), 1, 4),
+        separate(&quot;BGN_DATE&quot;, &quot;BGN_DATE_&quot;, sep = &quot; &quot;, extra = &quot;drop&quot;, remove = F) %&gt;%
+        separate(&quot;END_DATE&quot;, &quot;END_DATE_&quot;, sep = &quot; &quot;, extra = &quot;drop&quot;, remove = F) %&gt;%
+        mutate(BGN_TIME_ = ifelse(is.na(BGN_TIME),
+                                  '0000',
+                                  substr(gsub(':', '', BGN_TIME), 1, 4)),
+               END_TIME_ = ifelse(is.na(END_TIME),
+                                  '0000',
+                                  substr(gsub(':', '', END_TIME), 1, 4)),
                begin.date = as.POSIXct(paste(BGN_DATE_, BGN_TIME_),
                                        format = '%m/%d/%Y %H%M',
-                                       tz = TIME_ZONE[1]))
-}
-# for (tz in seq(nrow(data))) {
-#     form &lt;- if (grepl('^\\d{4}$', data$BGN_TIME[tz], perl = T)) {
-#         '%m/%d/%Y %H%M'
-#     } else if (grepl('^\\d{2}:\\d{2}:\\d{2} (AM|PM)$', 
-#                      data$BGN_TIME[tz], perl = T)) {
-#         '%m/%d/%Y %H:%M:%S' 
-#     } else {
-#         stop('Unknown time format for ', data$BGN_TIME[tz])
-#     }
-#     data$begin.date[tz] &lt;- 
-#         with(data[tz, ], as.POSIXct(paste(strsplit(BGN_DATE, ' ')[[1]][1],
-#                                           BGN_TIME),
-#                                     format = form,
-#                                     tz = TIME_ZONE))
-# }
-data &lt;- bind_rows(date.data)</code></pre>
+                                       tz = print(timezone[1])),
+               end.date = as.POSIXct(paste(END_DATE_, END_TIME_),
+                                     format = '%m/%d/%Y %H%M',
+                                     tz = timezone[1])
+               ) #%&gt;%
+        # select(-BGN_DATE, -BGN_DATE_,
+        #        -END_DATE, -END_DATE_,
+        #        -BGN_TIME, -BGN_TIME_,
+        #        -END_TIME, -END_TIME_)
+}</code></pre>
+<pre><code>## [1] &quot;America/Anchorage&quot;
+## [1] &quot;America/Chicago&quot;
+## [1] &quot;America/Denver&quot;
+## [1] &quot;America/Los_Angeles&quot;
+## [1] &quot;America/New_York&quot;
+## [1] &quot;America/Port_of_Spain&quot;
+## [1] &quot;America/Puerto_Rico&quot;
+## [1] &quot;America/Virgin&quot;
+## [1] &quot;Indian/Mahe&quot;
+## [1] &quot;Pacific/Apia&quot;
+## [1] &quot;Pacific/Guam&quot;
+## [1] &quot;Pacific/Honolulu&quot;
+## [1] &quot;UTC&quot;</code></pre>
+<pre class="r"><code>data &lt;- bind_rows(date.data)# %&gt;% select(-TIME_ZONE)</code></pre>
 </div>
 <div id="event-types" class="section level4">
 <h4>Event types</h4>
@@ -217,7 +239,29 @@ data %&lt;&gt;%
                               from = evtypes$from, 
                               to = evtypes$to)) %&gt;%
     separate(EVTYPE, into = c(&quot;event.type.major&quot;, &quot;event.type.minor&quot;), 
-             sep = '/', extra = 'merge', fill = &quot;right&quot;)</code></pre>
+             sep = '/', extra = 'merge', fill = &quot;right&quot;) %&gt;%
+    mutate_at(vars(event.type.major, event.type.minor), funs(as.factor))</code></pre>
+</div>
+<div id="states-and-regions" class="section level4">
+<h4>States and regions</h4>
+<p>The <code>STATE</code> variable contains a number of non-standard state codes. The <a href="https://github.com/Hugovdberg/StormData/blob/master/doc/CodeBook.md">codebook</a> describes a list of all state codes and a mapping to consistent names for the regions in which the event occurred, which is stored in <a href="https://github.com/Hugovdberg/StormData/blob/master/data/STATE.csv">STATE.csv</a>.</p>
+<pre class="r"><code>states &lt;- read_csv(file.path('data', 'STATE.csv'), col_types = 'cc')
+data %&lt;&gt;% 
+    mutate(
+        region = as.factor(mapvalues(STATE,
+                                     from = states$from,
+                                     to = states$to))
+        )</code></pre>
+</div>
+<div id="latitude-and-longitude" class="section level4">
+<h4>Latitude and Longitude</h4>
+<p>The <code>LATITUDE</code>, <code>LONGITUDE</code>, <code>LATITUDE_E</code>, and <code>LONGITUDE_</code> variables contain the respective latitude and longitude of the start and end of the weather event. Both are given in hundreths of degrees, and converted to positive values for the longitudes. Missing values in the dataset are represented as <code>0</code>, these are converted to <code>NA</code>.</p>
+<pre class="r"><code>data %&lt;&gt;%
+    mutate(begin.latitude = ifelse(LATITUDE, LATITUDE/100, NA),
+           begin.longitude = ifelse(LONGITUDE, -LONGITUDE/100, NA),
+           end.latitude = ifelse(LATITUDE_E, LATITUDE_E/100, NA),
+           end.longitude = ifelse(LONGITUDE_, -LONGITUDE_/100, NA)) %&gt;%
+    select(-LATITUDE, -LATITUDE_E, -LONGITUDE, -LONGITUDE_)</code></pre>
 </div>
 </div>
 </div>
