@@ -4,6 +4,6 @@
 .Ruserdata
 
 cache/*
-data/*
 reports/cache*
 
+data/StormData.csv.bz2
