@@ -66,78 +66,172 @@ which the weather event started.
 
 ### COUNTYNAME
 
+`COUNTYNAME` is a character variable containing the county or counties in which
+the event occurred.
+It contains both references to county names and to county codes prepended with
+the [state code](#state).
+
 ### STATE
 
-```{r, results='asis'}
+`STATE` is a two-letter character variable containing an abbreviated state
+name.
+It contains 79 unique values, 50 of which can be related to the built in
+`state.abb` variable.
+
+Using the combination of state code and [countyname](#countyname) the meaning 
+of the other 22 values was inferred.
+Below is the ammended list of the used codes with their full description.
+
+```{r state, results='asis'}
 STATE <- data.frame(
     from = c(state.abb, "GU"),
     to = c(state.name, "Guam")
     )
 write_csv(STATE, file.path('data', 'STATE.csv'))
-names(STATE) <- c("State Code", "State Name")
-print(xtable(STATE), type = "html", include.rownames = FALSE,
+xSTATE <- xtable(STATE)
+names(xSTATE) <- c("State Code", "State Name")
+print(xSTATE, type = "html", include.rownames = FALSE,
       html.table.attributes = "")
 ```
 
 ### EVTYPE
 
+`EVTYPE` is character variable containing the type of weather event that
+occurred.
+It contains 977 unique values (890 unique values ignoring upper/lower case),
+ranging from "?" to "WND".
+
+A large number of misspelled eventtypes was present.
+The mapping below has been used to create uniform event types.
+
+```{r evtype, results='asis'}
+source(file.path('doc', 'EVTYPE.R'))
+write_csv(EVTYPE, file.path('data', 'EVTYPE.csv'))
+xEVTYPE <- xtable(EVTYPE)
+names(xEVTYPE) <- c("Event type (original)", "Event type (unified)")
+print(xEVTYPE, type = "html", include.rownames = FALSE,
+      html.table.attributes = "")
+```
+
+*This table is available in [EVTYPE.csv](../data/EVTYPE.csv)*
+
 ### BGN_RANGE
+
+`BGN_RANGE` is a numeric variable.
+It contains 272 unique values ranging from 0 to 3749.
 
 ### BGN_AZI
 
+`BGN_AZI` is a character variable describing the azimuth
+
 ### BGN_LOCATI
+
+`BGN_LOCATI`
 
 ### END_DATE
 
+`END_DATE`
+
 ### END_TIME
+
+`END_TIME`
 
 ### COUNTY_END
 
+`COUNTY_END`
+
 ### COUNTYENDN
+
+`COUNTYENDN`
 
 ### END_RANGE
 
+`END_RANGE`
+
 ### END_AZI
+
+`END_AZI`
 
 ### END_LOCATI
 
+`END_LOCATI`
+
 ### LENGTH
+
+`LENGTH`
 
 ### WIDTH
 
+`WIDTH`
+
 ### F
+
+`F`
 
 ### MAG
 
+`MAG`
+
 ### FATALITIES
+
+`FATALITIES` fatalities
 
 ### INJURIES
 
+`INJURIES` injuries
+
 ### PROPDMG
+
+`PROPDMG` property damage
 
 ### PROPDMGEXP
 
+`PROPDMGEXP` property damage expense magnitude
+
 ### CROPDMG
+
+`CROPDMG` crop damage
 
 ### CROPDMGEXP
 
+`CROPDMGEXP` crop damage expense magnitude
+
 ### WFO
+
+`WFO`
 
 ### STATEOFFIC
 
+`STATEOFFIC`
+
 ### ZONENAMES
+
+`ZONENAMES`
 
 ### LATITUDE
 
+`LATITUDE`
+
 ### LONGITUDE
+
+`LONGITUDE`
 
 ### LATITUDE_E
 
+`LATITUDE_E`
+
 ### LONGITUDE_
+
+`LONGITUDE_`
 
 ### REMARKS
 
+`REMARKS`
+
 ### REFNUM
+
+`REFNUM`
+
 
 ## Preprocessed data
 
