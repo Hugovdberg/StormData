@@ -203,21 +203,31 @@ personal <- data %>%
         decade = ordered(((year(begin.date)) %/% 10) * 10
                          # , levels = c(50,60,70,80,90,0,10,20,30,40)
                          ),
-        event.type.major = ordered(event.type.major, levels = event_levels)
+        event.type.major = ordered(event.type.major, levels = event_levels),
+        fatalities = FATALITIES,
+        injuries = INJURIES
         ) %>%
-    group_by(event.type.major, decade) %>%
-    summarise(fatalities = sum(FATALITIES),
-              injuries = sum(INJURIES)) %>%
-    gather(impact, victims, fatalities, injuries)
-
-personal %>%
+    gather(impact, victims, fatalities, injuries) %>%
     group_by(event.type.major, impact) %>%
-    summarise(victims = sum(victims)) %>%
+    summarise(sum = sum(victims),
+              mean = mean(victims)) %>%
+    gather(func, victims, sum, mean)
+```
+```{r}
+personal %>%
     ggplot(aes(x = event.type.major, y = victims, fill = impact)) +
     geom_bar(stat = "identity", position = "dodge") +
-    # facet_grid(decade ~ .)  +
+    facet_grid(func ~ ., scales = "free_y")  +
     # theme_economist() +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+    scale_y_log10(labels = function(x){sprintf('%.0f', x)}) +
+    scale_fill_discrete(name = "Type of victim",
+                        labels = c("Fatalities", "Injuries")) +
+    coord_cartesian(xlim = c(0.8, 10.2)) +
+    annotation_logticks(sides = "rl", alpha = 0.3) +
+    labs(title = "Top 10 weather event types, ranked by total number of victims",
+         x = "Major event type",
+         y = "Number of victims")
 ```
 
 ```{r}
