@@ -251,4 +251,3 @@ financial %>%
 [2]: https://www.coursera.org/learn/reproducible-research
 [3]: `r config.base.url`doc/CodeBook.md
 [4]: `r config.base.url`data/EVTYPE.csv
-[5]: `r config.base.url`data/STATE.csv

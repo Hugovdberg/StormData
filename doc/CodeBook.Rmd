@@ -137,7 +137,8 @@ It contains 272 unique values ranging from 0 to 3749.
 
 ### BGN_AZI
 
-`BGN_AZI` is a character variable describing the azimuth
+`BGN_AZI` is a character variable describing the azimuth of the trajectory of
+the weather event.
 
 ### BGN_LOCATI
 
