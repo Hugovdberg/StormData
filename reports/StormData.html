@@ -141,12 +141,15 @@ $(document).ready(function () {
 <h2>Synopsis</h2>
 <p>In this report I aim to identify the impact of storm events on public health and economics from (a subset of) the <a href="http://www.ncdc.noaa.gov/stormevents/">NOAA Storm Database</a>, collected between 1950 and 2011. The dataset contains a number of variables describing discrete weather events, on time, location, and trajectory, as well as the number of victims (direct or indirect), and damages to properties and crops.</p>
 <p>The analysis is divided in two parts, the first of which identifies which type of events has caused the largest total number of victims, as well as per single event. The second part is focussed on the financial impact of weather events, again in total over all recorded events, as well as per event.</p>
+<p>From the data I found that most victims are caused by tornadoes, thunderstorm winds, and excessive heat. The greatest financial impact is caused by floods, hurricanes and tornadoes.</p>
+<p>The fact that both high profile events of tornadoes and hurricanes cause great damage is not surprising. What does surprise me is that hurricanes don’t even occur in the top 10 of events ranked by number of victims.</p>
 </div>
 <div id="data-processing" class="section level2">
 <h2>1. Data Processing</h2>
+<p>The first step of the analysis is to retrieve the data and make sure it is in a format suitable for further analysis.</p>
 <div id="libraries" class="section level3">
 <h3>1.1 Libraries</h3>
-<p>For this analysis we used a range of libraries, which are listed below with their respective version numbers. Note this block was weaved with the option <code>message=FALSE</code> to hide startup messages.</p>
+<p>For this analysis we used a range of libraries, which are listed below with their respective version numbers. Note this block was knitted with the option <code>message=FALSE</code> to hide startup messages.</p>
 <pre class="r"><code># Reading data
 library(readr) # v1.0.0
 
@@ -174,8 +177,6 @@ if (!file.exists(data.raw)) {
 data &lt;- read_csv(file = data.raw,
                  col_types = 'dcccdcccdccccdcdccdddddddcdccccddddcc',
                  progress = FALSE)
-data.backup &lt;- data
-data &lt;- data.backup
 rm(data.url, data.raw)</code></pre>
 </div>
 <div id="cleaning-the-data" class="section level3">

@@ -31,15 +31,26 @@ event.
 The second part is focussed on the financial impact of weather events, again
 in total over all recorded events, as well as per event.
 
+From the data I found that most victims are caused by tornadoes, thunderstorm
+winds, and excessive heat.
+The greatest financial impact is caused by floods, hurricanes and tornadoes.
+
+The fact that both high profile events of tornadoes and hurricanes cause great
+damage is not surprising.
+What does surprise me is that hurricanes don't even occur in the top 10 of
+events ranked by number of victims.
 
 
 ## 1. Data Processing
+
+The first step of the analysis is to retrieve the data and make sure it is in a
+format suitable for further analysis.
 
 ### 1.1 Libraries
 
 For this analysis we used a range of libraries, which are listed below with
 their respective version numbers.
-Note this block was weaved with the option `message=FALSE` to hide startup
+Note this block was knitted with the option `message=FALSE` to hide startup
 messages.
 
 ```{r load_libs, message=FALSE}
@@ -75,8 +86,6 @@ if (!file.exists(data.raw)) {
 data <- read_csv(file = data.raw,
                  col_types = 'dcccdcccdccccdcdccdddddddcdccccddddcc',
                  progress = FALSE)
-data.backup <- data
-data <- data.backup
 rm(data.url, data.raw)
 ```
 
