@@ -22,6 +22,7 @@ In this report I aim to identify the impact of storm events on public health
 and economics from (a subset of) the [NOAA Storm Database][1], collected
 between 1950 and 2011.
 
+
 ## 1. Data Processing
 
 ### 1.1 Libraries
@@ -88,7 +89,7 @@ don't support reading the timezone from the inputstring.
 Therefore the dataset is split along the `TIME_ZONE` variable, after which for
 each split the dates are converted before merging the data back together.
 
-```{r date_convert}
+```{r date_convert, cache=TRUE}
 TZ <- read_csv(file.path('data', 'TZ.csv'))
 data %<>% inner_join(TZ)
 date.data <- split(x = data, f = data$timezone)
@@ -104,15 +105,15 @@ for (tz in seq_along(date.data)) {
                                   substr(gsub(':', '', END_TIME), 1, 4)),
                begin.date = as.POSIXct(paste(BGN_DATE_, BGN_TIME_),
                                        format = '%m/%d/%Y %H%M',
-                                       tz = print(timezone[1])),
+                                       tz = timezone[1]),
                end.date = as.POSIXct(paste(END_DATE_, END_TIME_),
                                      format = '%m/%d/%Y %H%M',
                                      tz = timezone[1])
-               ) #%>%
-        # select(-BGN_DATE, -BGN_DATE_,
-        #        -END_DATE, -END_DATE_,
-        #        -BGN_TIME, -BGN_TIME_,
-        #        -END_TIME, -END_TIME_)
+               ) %>%
+        select(-BGN_DATE, -BGN_DATE_,
+               -END_DATE, -END_DATE_,
+               -BGN_TIME, -BGN_TIME_,
+               -END_TIME, -END_TIME_)
 }
 data <- bind_rows(date.data)# %>% select(-TIME_ZONE)
 ```
@@ -174,6 +175,58 @@ data %<>%
     select(-LATITUDE, -LATITUDE_E, -LONGITUDE, -LONGITUDE_)
 ```
 ## 2. Results
+
+```{r summ}
+summary(data)
+
+data %>% ggplot(aes(x = year(begin.date), fill = event.type.major)) +
+    geom_histogram(binwidth = 2, na.rm = TRUE, position = "fill") +
+    theme(legend.position = 'none')
+```
+
+### 2.1 Personal impact
+
+
+
+```{r plot_personal}
+top_events <- data %>%
+    group_by(event.type.major) %>%
+    summarise(victims = sum(FATALITIES) + sum(INJURIES)) %>%
+    top_n(10, victims) %>%
+    droplevels()
+event_levels <- levels(top_events$event.type.major)[order(top_events$victims,
+                                                          decreasing = TRUE)]
+personal <- data %>%
+    filter(event.type.major %in% top_events$event.type.major) %>%
+    select(begin.date, event.type.major, FATALITIES, INJURIES) %>%
+    mutate(
+        decade = ordered(((year(begin.date)) %/% 10) * 10
+                         # , levels = c(50,60,70,80,90,0,10,20,30,40)
+                         ),
+        event.type.major = ordered(event.type.major, levels = event_levels)
+        ) %>%
+    group_by(event.type.major, decade) %>%
+    summarise(fatalities = sum(FATALITIES),
+              injuries = sum(INJURIES)) %>%
+    gather(impact, victims, fatalities, injuries)
+
+personal %>%
+    group_by(event.type.major, impact) %>%
+    summarise(victims = sum(victims)) %>%
+    ggplot(aes(x = event.type.major, y = victims, fill = impact)) +
+    geom_bar(stat = "identity", position = "dodge") +
+    # facet_grid(decade ~ .)  +
+    # theme_economist() +
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1))
+```
+
+```{r}
+personal %>%
+    ggplot(aes(x = as.numeric(as.character(decade)), y = victims, color = impact)) +
+    geom_line() +
+    facet_wrap(~ event.type.major, ncol = 1) +
+    scale_y_log10()
+```
 
 [1]: http://www.ncdc.noaa.gov/stormevents/ 
 [2]: https://www.coursera.org/learn/reproducible-research
