@@ -178,57 +178,11 @@ data &lt;- read_csv(file = data.raw,
                  col_types = 'dcccdcccdccccdcdccdddddddcdccccddddcc',
                  progress = FALSE)
 rm(data.url, data.raw)</code></pre>
+<p>The resultant dataset has dimensions 902297 by 37.</p>
 </div>
 <div id="cleaning-the-data" class="section level3">
 <h3>1.3 Cleaning the data</h3>
 <p>The raw data contains various variables that are not in optimal form to perform further analyses.</p>
-<div id="dates" class="section level4">
-<h4>Dates</h4>
-<p>Dates in the original data are scattered over a number of variables, describing dates in various different timezones. To create uniform dates, that can be handled consistently, all dates and times are converted to <code>POSIXct</code> objects.</p>
-<p>Unfortunately timezones are hard to get right, and the conversion functions don’t support reading the timezone from the inputstring. Therefore the dataset is split along the <code>TIME_ZONE</code> variable, after which for each split the dates are converted before merging the data back together.</p>
-<pre class="r"><code># Add relevant timezone information for date conversion
-TZ &lt;- read_csv(file.path('data', 'TZ.csv'))</code></pre>
-<pre><code>## Parsed with column specification:
-## cols(
-##   TIME_ZONE = col_character(),
-##   STATE = col_character(),
-##   timezone = col_character()
-## )</code></pre>
-<pre class="r"><code>data %&lt;&gt;% inner_join(TZ)</code></pre>
-<pre><code>## Joining, by = c(&quot;TIME_ZONE&quot;, &quot;STATE&quot;)</code></pre>
-<pre class="r"><code># Split the data along the various timezones
-date.data &lt;- split(x = data, f = data$timezone)
-for (tz in seq_along(date.data)) {
-    date.data[[tz]] %&lt;&gt;%
-        # Extract only date part of begin date
-        separate(&quot;BGN_DATE&quot;, &quot;BGN_DATE_&quot;,
-                 sep = &quot; &quot;, extra = &quot;drop&quot;, remove = F) %&gt;%
-        # Extract only date part of end date
-        separate(&quot;END_DATE&quot;, &quot;END_DATE_&quot;,
-                 sep = &quot; &quot;, extra = &quot;drop&quot;, remove = F) %&gt;%
-        mutate(
-            # Set begin time to 0:00 if missing
-            BGN_TIME_ = ifelse(is.na(BGN_TIME),
-                               '0000',
-                               substr(gsub(':', '', BGN_TIME), 1, 4)),
-            # Set end time to 0:00 if missing
-            END_TIME_ = ifelse(is.na(END_TIME),
-                               '0000',
-                               substr(gsub(':', '', END_TIME), 1, 4)),
-            # Convert begin date and time to POSIXct
-            begin.date = as.POSIXct(paste(BGN_DATE_, BGN_TIME_),
-                                    format = '%m/%d/%Y %H%M',
-                                    tz = timezone[1]),
-            # Convert end date and time to POSIXct
-            end.date = as.POSIXct(paste(END_DATE_, END_TIME_),
-                                  format = '%m/%d/%Y %H%M',
-                                  tz = timezone[1])
-        )
-}
-# Join split dataset
-data &lt;- bind_rows(date.data)
-rm(date.data, tz, TZ)</code></pre>
-</div>
 <div id="event-types" class="section level4">
 <h4>Event types</h4>
 <p>The event types contain a lot of misspelled event types. The <a href="https://github.com/Hugovdberg/StormData/blob/master/doc/CodeBook.md">codebook</a> describes a list of all event types in the <code>EVTYPE</code> variable and a mapping to more consistent names, which is stored in <a href="https://github.com/Hugovdberg/StormData/blob/master/data/EVTYPE.csv">EVTYPE.csv</a>. After renaming the event types they are split on the “/”-character into a major and minor event type, under the assumption that the major event type is listed first in the <code>EVTYPE</code> variable.</p>
@@ -241,27 +195,6 @@ data %&lt;&gt;%
              sep = '/', extra = 'merge', fill = &quot;right&quot;) %&gt;%
     mutate_at(vars(event.type.major, event.type.minor), funs(as.factor))
 rm(evtypes)</code></pre>
-</div>
-<div id="states-and-regions" class="section level4">
-<h4>States and regions</h4>
-<p>The <code>STATE</code> variable contains a number of non-standard state codes. The <a href="https://github.com/Hugovdberg/StormData/blob/master/doc/CodeBook.md">codebook</a> describes a list of all state codes and a mapping to consistent names for the regions in which the event occurred, which is stored in <a href="https://github.com/Hugovdberg/StormData/blob/master/data/STATE.csv">STATE.csv</a>.</p>
-<pre class="r"><code>states &lt;- read_csv(file.path('data', 'STATE.csv'), col_types = 'cc')
-data %&lt;&gt;% 
-    mutate(
-        region = as.factor(mapvalues(STATE,
-                                     from = states$from,
-                                     to = states$to))
-        )
-rm(states)</code></pre>
-</div>
-<div id="latitude-and-longitude" class="section level4">
-<h4>Latitude and Longitude</h4>
-<p>The <code>LATITUDE</code>, <code>LONGITUDE</code>, <code>LATITUDE_E</code>, and <code>LONGITUDE_</code> variables contain the respective latitude and longitude of the start and end of the weather event. Both are given in hundreths of degrees, and converted to positive values for the longitudes. Missing values in the dataset are represented as <code>0</code>, these are converted to <code>NA</code>.</p>
-<pre class="r"><code>data %&lt;&gt;%
-    mutate(begin.latitude = ifelse(LATITUDE, LATITUDE/100, NA),
-           begin.longitude = ifelse(LONGITUDE, -LONGITUDE/100, NA),
-           end.latitude = ifelse(LATITUDE_E, LATITUDE_E/100, NA),
-           end.longitude = ifelse(LONGITUDE_, -LONGITUDE_/100, NA))</code></pre>
 </div>
 <div id="damages-to-properties-and-crops" class="section level4">
 <h4>Damages to Properties and Crops</h4>
@@ -284,6 +217,12 @@ rm(states)</code></pre>
 <div id="relevant-variables" class="section level4">
 <h4>Relevant variables</h4>
 <p>Now all relevant variables have been cleaned up the final selection of the features can be made.</p>
+<pre class="r"><code>data %&lt;&gt;% select(
+    event.type.major,
+    FATALITIES, INJURIES,
+    property.damages, crop.damages
+)
+names(data) %&lt;&gt;% tolower</code></pre>
 </div>
 </div>
 </div>
@@ -294,18 +233,16 @@ rm(states)</code></pre>
 <h3>2.1 Personal impact</h3>
 <pre class="r"><code>top_events &lt;- data %&gt;%
     group_by(event.type.major) %&gt;%
-    summarise(victims = sum(FATALITIES) + sum(INJURIES)) %&gt;%
+    summarise(victims = sum(fatalities) + sum(injuries)) %&gt;%
     top_n(10, victims) %&gt;%
     droplevels()
 event_levels &lt;- levels(top_events$event.type.major)[order(top_events$victims,
                                                           decreasing = TRUE)]
 personal &lt;- data %&gt;%
     filter(event.type.major %in% top_events$event.type.major) %&gt;%
-    select(begin.date, event.type.major, FATALITIES, INJURIES) %&gt;%
+    select(event.type.major, fatalities, injuries) %&gt;%
     mutate(
-        event.type.major = ordered(event.type.major, levels = event_levels),
-        fatalities = FATALITIES,
-        injuries = INJURIES
+        event.type.major = ordered(event.type.major, levels = event_levels)
         ) %&gt;%
     gather(impact, victims, fatalities, injuries) %&gt;%
     group_by(event.type.major, impact) %&gt;%
@@ -340,7 +277,7 @@ event_levels &lt;- levels(top_events$event.type.major)[order(top_events$damages,
                                                           decreasing = TRUE)]
 financial &lt;- data %&gt;%
     filter(event.type.major %in% top_events$event.type.major) %&gt;%
-    select(begin.date, event.type.major, property.damages, crop.damages) %&gt;%
+    select(event.type.major, property.damages, crop.damages) %&gt;%
     mutate(
         event.type.major = ordered(event.type.major, levels = event_levels)
         ) %&gt;%

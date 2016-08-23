@@ -89,61 +89,12 @@ data <- read_csv(file = data.raw,
 rm(data.url, data.raw)
 ```
 
+The resultant dataset has dimensions `r paste(dim(data), collapse = ' by ')`.
+
 ### 1.3 Cleaning the data
 
 The raw data contains various variables that are not in optimal form to perform
 further analyses.
-
-#### Dates
-
-Dates in the original data are scattered over a number of variables, describing
-dates in various different timezones.
-To create uniform dates, that can be handled consistently, all dates and times
-are converted to `POSIXct` objects.
-
-Unfortunately timezones are hard to get right, and the conversion functions
-don't support reading the timezone from the inputstring.
-Therefore the dataset is split along the `TIME_ZONE` variable, after which for
-each split the dates are converted before merging the data back together.
-
-```{r date_convert, cache=TRUE}
-# Add relevant timezone information for date conversion
-TZ <- read_csv(file.path('data', 'TZ.csv'))
-data %<>% inner_join(TZ)
-
-# Split the data along the various timezones
-date.data <- split(x = data, f = data$timezone)
-for (tz in seq_along(date.data)) {
-    date.data[[tz]] %<>%
-        # Extract only date part of begin date
-        separate("BGN_DATE", "BGN_DATE_",
-                 sep = " ", extra = "drop", remove = F) %>%
-        # Extract only date part of end date
-        separate("END_DATE", "END_DATE_",
-                 sep = " ", extra = "drop", remove = F) %>%
-        mutate(
-            # Set begin time to 0:00 if missing
-            BGN_TIME_ = ifelse(is.na(BGN_TIME),
-                               '0000',
-                               substr(gsub(':', '', BGN_TIME), 1, 4)),
-            # Set end time to 0:00 if missing
-            END_TIME_ = ifelse(is.na(END_TIME),
-                               '0000',
-                               substr(gsub(':', '', END_TIME), 1, 4)),
-            # Convert begin date and time to POSIXct
-            begin.date = as.POSIXct(paste(BGN_DATE_, BGN_TIME_),
-                                    format = '%m/%d/%Y %H%M',
-                                    tz = timezone[1]),
-            # Convert end date and time to POSIXct
-            end.date = as.POSIXct(paste(END_DATE_, END_TIME_),
-                                  format = '%m/%d/%Y %H%M',
-                                  tz = timezone[1])
-        )
-}
-# Join split dataset
-data <- bind_rows(date.data)
-rm(date.data, tz, TZ)
-```
 
 #### Event types
 
@@ -167,45 +118,9 @@ data %<>%
 rm(evtypes)
 ```
 
-#### States and regions
-
-The `STATE` variable contains a number of non-standard state codes.
-The [codebook][3] describes a list of all state codes and a mapping to
-consistent names for the regions in which the event occurred, which is stored
-in [STATE.csv][5].
-
-```{r region_mapping}
-states <- read_csv(file.path('data', 'STATE.csv'), col_types = 'cc')
-data %<>% 
-    mutate(
-        region = as.factor(mapvalues(STATE,
-                                     from = states$from,
-                                     to = states$to))
-        )
-rm(states)
-```
-
-#### Latitude and Longitude
-
-The `LATITUDE`, `LONGITUDE`, `LATITUDE_E`, and `LONGITUDE_` variables contain
-the respective latitude and longitude of the start and end of the weather
-event.
-Both are given in hundreths of degrees, and converted to positive values for
-the longitudes.
-Missing values in the dataset are represented as `0`, these are converted to
-`NA`.
-
-```{r lat_lon}
-data %<>%
-    mutate(begin.latitude = ifelse(LATITUDE, LATITUDE/100, NA),
-           begin.longitude = ifelse(LONGITUDE, -LONGITUDE/100, NA),
-           end.latitude = ifelse(LATITUDE_E, LATITUDE_E/100, NA),
-           end.longitude = ifelse(LONGITUDE_, -LONGITUDE_/100, NA))
-```
-
 #### Damages to Properties and Crops
 
-```{r}
+```{r calc_damages}
 data %<>%
     mutate(PROPDMGEXP = ifelse(toupper(PROPDMGEXP) %in% c("K", "M", "B"),
                                toupper(PROPDMGEXP),
@@ -228,6 +143,14 @@ data %<>%
 Now all relevant variables have been cleaned up the final selection of the
 features can be made.
 
+```{r select}
+data %<>% select(
+    event.type.major,
+    FATALITIES, INJURIES,
+    property.damages, crop.damages
+)
+names(data) %<>% tolower
+```
 
 ## 2. Results
 
@@ -243,18 +166,16 @@ features can be made.
 ```{r plot_personal}
 top_events <- data %>%
     group_by(event.type.major) %>%
-    summarise(victims = sum(FATALITIES) + sum(INJURIES)) %>%
+    summarise(victims = sum(fatalities) + sum(injuries)) %>%
     top_n(10, victims) %>%
     droplevels()
 event_levels <- levels(top_events$event.type.major)[order(top_events$victims,
                                                           decreasing = TRUE)]
 personal <- data %>%
     filter(event.type.major %in% top_events$event.type.major) %>%
-    select(begin.date, event.type.major, FATALITIES, INJURIES) %>%
+    select(event.type.major, fatalities, injuries) %>%
     mutate(
-        event.type.major = ordered(event.type.major, levels = event_levels),
-        fatalities = FATALITIES,
-        injuries = INJURIES
+        event.type.major = ordered(event.type.major, levels = event_levels)
         ) %>%
     gather(impact, victims, fatalities, injuries) %>%
     group_by(event.type.major, impact) %>%
@@ -295,7 +216,7 @@ event_levels <- levels(top_events$event.type.major)[order(top_events$damages,
                                                           decreasing = TRUE)]
 financial <- data %>%
     filter(event.type.major %in% top_events$event.type.major) %>%
-    select(begin.date, event.type.major, property.damages, crop.damages) %>%
+    select(event.type.major, property.damages, crop.damages) %>%
     mutate(
         event.type.major = ordered(event.type.major, levels = event_levels)
         ) %>%
