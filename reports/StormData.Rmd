@@ -1,7 +1,7 @@
 ---
 title: "Impact of Storm Events on Public Health and Economics"
 author: "Hugo van den Berg"
-date: "August 21, 2016"
+date: "August 24, 2016"
 output: 
     html_document:
       toc: yes
@@ -40,8 +40,8 @@ The greatest financial impact is caused by floods, hurricanes and tornadoes.
 
 The fact that both high profile events of tornadoes and hurricanes cause great
 damage is not surprising.
-What does surprise me is that hurricanes don't even occur in the top 10 of
-events ranked by number of victims.
+Surprisingly, hurricanes don't even occur in the top 10 of events ranked by
+number of victims.
 
 
 ## 1. Data Processing
@@ -191,6 +191,8 @@ To address the first question we first select the major event types causing the
 largest total number of victims.
 This is done by adding the total number of fatalities and injuries together,
 per event type.
+This has to be done in a two-step process since we need to further summarise
+the data for the ranking than for plotting.
 
 ```{r order_victims}
 top_events <- data %>%
@@ -227,8 +229,8 @@ personal <- data %>%
     gather(impact, victims, fatalities, injuries) %>%
     # Calculate number of victims per event.type, impact combination
     group_by(event.type.major, impact) %>%
-    summarise(sum = sum(victims, na.rm = TRUE),
-              mean = mean(victims, na.rm = TRUE)) %>%
+    summarise(sum = sum(victims),
+              mean = mean(victims)) %>%
     # Make sum and mean two levels of the func variable for facetting the plot
     gather(func, victims, sum, mean) %>%
     # Change labels of function for prettier facet labels
@@ -277,49 +279,100 @@ heat, or are structurally less able to cope with its effects.
 
 ### 2.2 Financial impact
 
+The analysis of the financial impact of weather events is similar to the
+analysis of the impact on public health.
+First we rank the events by total damages, and then we create a new subset of
+the data containing total and mean damages per event type for the top 10 worst
+weather events.
 
-```{r plot_financial}
+```{r prep_financial}
 top_events <- data %>%
+    # Calculate total damages per major event type
     group_by(event.type.major) %>%
     summarise(damages = sum(property.damages) + sum(crop.damages)) %>%
+    # Select top 10 worst events
     top_n(10, damages) %>%
+    # Arrange by descending total damages
+    arrange(-damages) %>%
+    # Remove unused factor levels from event.type.major
     droplevels()
-event_levels <- levels(top_events$event.type.major)[order(top_events$damages,
-                                                          decreasing = TRUE)]
+# Store event types
+event_levels <- as.character(top_events$event.type.major)
+
+# Prepare data for plotting
 financial <- data %>%
+    # Filter out the worst events
     filter(event.type.major %in% top_events$event.type.major) %>%
+    # Select the relevant columns for this plot
     select(event.type.major, property.damages, crop.damages) %>%
-    mutate(
-        event.type.major = ordered(event.type.major, levels = event_levels)
-        ) %>%
+    # Reset the factor levels to the predetermined levels
+    mutate(event.type.major = 
+               factor(event.type.major, levels = event_levels)) %>%
+    # Make property and crop damages to levels of the impact variable
     gather(impact, damages, property.damages, crop.damages) %>%
+    # Calculate the damages per event.type, impact combination
     group_by(event.type.major, impact) %>%
-    summarise(sum = sum(damages, na.rm = TRUE),
-              mean = mean(damages, na.rm = TRUE)) %>%
+    summarise(sum = sum(damages),
+              mean = mean(damages)) %>%
+    # Make sum and mean two levels of the func variable for facetting the plot
     gather(func, damages, sum, mean) %>%
+    # Change labels of function for prettier facet labels
     mutate(func = factor(func, levels = c("sum", "mean"),
                          labels = c("Total", "Avg. per event")))
 ```
 
-```{r}
+```{r plot_financial, fig.height=7}
 financial %>%
     ggplot(aes(x = event.type.major, y = damages, fill = impact)) +
+    # Display as a barplot with crop and property damages next to each other
     geom_bar(stat = "identity", position = "dodge") +
-    facet_grid(func ~ ., scales = "free_y")  +
-    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+    # Display the y-axis on a logarithmic scale with extra ticks for clarity
     scale_y_log10() +
+    annotation_logticks(sides = "rl", alpha = 0.3) +
+    # Expand the x-limits to make room for the logticks
+    coord_cartesian(xlim = c(0.8, 10.2)) +
+    # Display total and average above in two facets with seperate y-scales
+    facet_grid(func ~ ., scales = "free_y")  +
+    # Rotate the labels on the x-axis
+    theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
+    # Set the labels for the legend
     scale_fill_brewer(palette = "Set1",
                       name = "Type of damages",
                       labels = c("Crops", "Properties")) +
-    coord_cartesian(xlim = c(0.8, 10.2)) +
-    annotation_logticks(sides = "rl", alpha = 0.3) +
+    # Add labels to the plot
     labs(title = "Top 10 weather event types, ranked by total damages",
          x = "Major event type",
          y = "Damages")
 ```
 
+When ranked by damages to crops and properties tornadoes are no longer the
+worst event type, with floods and hurricanes causing more damage, both in total
+and per event.
+However the differences seem to be not as stark as seen in the impact on public
+health, although it might be somewhat obscured by the wider range of the values
+on the y-axis.
+
+Whereas heat related events appear several times in the top 10 worst events
+ranked by impact on public health, ranked by impact on economics it are floods
+and several related types that cause the most damage.
+
+## 3. Conclusion
+
+From the analysis of `r nrow(data)` recorded weather events it is apparent that
+the impact of weather events on public health on the one hand, and economics on
+the other hand is quite different.
+That said, a few event types show in both top 10 lists, the worst of which are
+tornadoes, being the single worst event type for public health and third worst
+for economics.
+Surprisingly hurricanes, while taking the second spot on physical damages, do
+not cause enough victims to appear in the top 10 ranked by impact on public
+health.
+
+As a final note, the source materials of this report are available at
+[GitHub][6], where the accompanying [codebook][3] is published as well.
 
 [1]: http://www.ncdc.noaa.gov/stormevents/ 
 [2]: https://www.coursera.org/learn/reproducible-research
 [3]: `r config.base.url`doc/CodeBook.md
 [4]: `r config.base.url`data/EVTYPE.csv
+[6]: `r config.base.url`
