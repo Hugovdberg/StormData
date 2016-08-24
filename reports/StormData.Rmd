@@ -5,6 +5,8 @@ date: "August 21, 2016"
 output: 
     html_document:
       toc: yes
+      toc_float: true
+      theme: "cerulean"
     github_document:
       toc: yes
 ---
@@ -65,8 +67,9 @@ library(dplyr) # v0.5.0
 library(lubridate) # v1.5.6
 library(stringr) # v1.1.0
 
-# Plotting data
+# Display data
 library(ggplot2) # v2.1.0
+library(xtable)
 ```
 
 ### 1.2 Raw data collection
@@ -89,7 +92,7 @@ data <- read_csv(file = data.raw,
 rm(data.url, data.raw)
 ```
 
-The resultant dataset has dimensions `r paste(dim(data), collapse = ' by ')`.
+The raw dataset has dimensions `r paste(dim(data), collapse = ' by ')`.
 
 ### 1.3 Cleaning the data
 
@@ -152,12 +155,23 @@ data %<>% select(
 names(data) %<>% tolower
 ```
 
+The final dataset has dimensions `r paste(dim(data), collapse = ' by ')` and
+contains `r sum(!complete.cases(data))` incomplete observations.
+
+```{r summary, results='asis'}
+print(xtable(summary(data)), type = "html", include.rownames = FALSE,
+      sanitize.colnames.function = function(x){gsub('( )+', ' ', x)},
+      html.table.attributes = "")
+```
+
 ## 2. Results
 
-```{r summ}
-# summary(data)
+The cleaned up dataset can be used to answer the following two questions:
 
-```
+1. Across the United States, which types of events are most harmful with
+respect to population health?
+2. Across the United States, which types of events have the greatest economic
+consequences?
 
 ### 2.1 Personal impact
 
