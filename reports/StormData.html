@@ -297,7 +297,7 @@ data &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class=
 <p>The raw data contains various variables that are not in optimal form to perform further analyses.</p>
 <div id="event-types" class="section level4">
 <h4>Event types</h4>
-<p>The event types contain a lot of misspelled event types. The <a href="https://github.com/Hugovdberg/StormData/blob/master/doc/CodeBook.md">codebook</a> describes a list of all event types in the <code>EVTYPE</code> variable and a mapping to more consistent names, which is stored in <a href="https://github.com/Hugovdberg/StormData/blob/master/data/EVTYPE.csv">EVTYPE.csv</a>. After renaming the event types they are split on the “/”-character into a major and minor event type, under the assumption that the major event type is listed first in the <code>EVTYPE</code> variable.</p>
+<p>The event types contain a lot of misspelled event types. The <a href="https://github.com/Hugovdberg/StormData/blob/master/doc/CodeBook.md">codebook</a> describes a list of all event types in the <code>EVTYPE</code> variable and a mapping to more consistent names, which is stored in <a href="https://github.com/Hugovdberg/StormData/blob/master/data/EVTYPE.csv">EVTYPE.csv</a> (To prevent flooding the report with 2000(!!) extra lines). After renaming the event types they are split on the “/”-character into a major and minor event type, under the assumption that the major event type is listed first in the <code>EVTYPE</code> variable.</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">evtypes &lt;-<span class="st"> </span><span class="kw">read_csv</span>(<span class="kw">file.path</span>(<span class="st">'data'</span>, <span class="st">'EVTYPE.csv'</span>), <span class="dt">col_types =</span> <span class="st">'cc'</span>)
 data %&lt;&gt;%<span class="st"> </span>
 <span class="st">    </span><span class="kw">mutate</span>(<span class="dt">EVTYPE =</span> <span class="kw">mapvalues</span>(EVTYPE, 
@@ -346,7 +346,7 @@ html %&lt;&gt;%
 <span class="st">    </span><span class="kw">gsub</span>(<span class="st">'&lt;th&gt;'</span>, <span class="st">'&lt;th colspan=&quot;2&quot;&gt;'</span>, ., <span class="dt">fixed =</span> <span class="ot">TRUE</span>)
 <span class="kw">cat</span>(html)</code></pre></div>
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Wed Aug 24 20</td><td style="padding: 3px">58</td><td style="padding: 3px">47 2016 -->
+<!-- Wed Aug 24 22</td><td style="padding: 3px">15</td><td style="padding: 3px">57 2016 -->
 <table>
 <tr>
 <th colspan="2">
@@ -711,7 +711,7 @@ financial &lt;-<span class="st"> </span>data %&gt;%
 <div id="conclusion" class="section level2">
 <h2>3. Conclusion</h2>
 <p>From the analysis of 902297 recorded weather events it is apparent that the impact of weather events on public health on the one hand, and economics on the other hand is quite different. That said, a few event types show in both top 10 lists, the worst of which are tornadoes, being the single worst event type for public health and third worst for economics. Surprisingly hurricanes, while taking the second spot on physical damages, do not cause enough victims to appear in the top 10 ranked by impact on public health.</p>
-<p>As a final note, the source materials of this report are available at <a href="https://github.com/Hugovdberg/StormData/blob/master/">GitHub</a>, where the accompanying <a href="https://github.com/Hugovdberg/StormData/blob/master/doc/CodeBook.md">codebook</a> is published as well.</p>
+<p>As a final note, the source materials of this report are available at <a href="https://github.com/Hugovdberg/StormData/blob/master/">GitHub</a>, where the accompanying <a href="https://github.com/Hugovdberg/StormData/blob/master/doc/CodeBook.md">codebook</a> is published as well (open the links in a new tab when viewing from RPubs, as RPubs fails to open the links within its own frame).</p>
 </div>
 
 

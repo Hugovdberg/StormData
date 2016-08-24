@@ -105,7 +105,7 @@ further analyses.
 The event types contain a lot of misspelled event types.
 The [codebook][3] describes a list of all event types in the `EVTYPE` variable
 and a mapping to more consistent names, which is stored in 
-[EVTYPE.csv][4].
+[EVTYPE.csv][4] (To prevent flooding the report with 2000(!!) extra lines).
 After renaming the event types they are split on the "/"-character into a
 major and minor event type, under the assumption that the major event type is
 listed first in the `EVTYPE` variable.
@@ -369,7 +369,9 @@ not cause enough victims to appear in the top 10 ranked by impact on public
 health.
 
 As a final note, the source materials of this report are available at
-[GitHub][6], where the accompanying [codebook][3] is published as well.
+[GitHub][6], where the accompanying [codebook][3] is published as well (open
+the links in a new tab when viewing from RPubs, as RPubs fails to open the
+links within its own frame).
 
 [1]: http://www.ncdc.noaa.gov/stormevents/ 
 [2]: https://www.coursera.org/learn/reproducible-research
