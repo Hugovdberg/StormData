@@ -27,7 +27,7 @@ Original data
 
 ### BGN\_TIME
 
-`BGN_TIME` is time variable containing the local time of day for the start of a weather event. It should be used together with [BGN\_DATE](#bgn_date) and [TIME\_ZONE](#time_zone).
+`BGN_TIME` is a time variable containing the local time of day for the start of a weather event. It should be used together with [BGN\_DATE](#bgn_date) and [TIME\_ZONE](#time_zone).
 
 ### TIME\_ZONE
 
@@ -36,7 +36,7 @@ Original data
 Timezones are inherently difficult to work with, and three letter POSIX codes cannot be uniquely mapped to the Olson timezone names R uses. Therefore the codes have been mapped manually to a suitable Olson timezone:
 
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Tue Aug 23 01:46:11 2016 -->
+<!-- Wed Aug 24 22:04:03 2016 -->
 <table>
 <tr>
 <th>
@@ -2894,7 +2894,7 @@ UTC
 Using the combination of state code and [countyname](#countyname) the meaning of the other 22 values was inferred. Below is the ammended list of the used codes with their full description.
 
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Tue Aug 23 01:46:11 2016 -->
+<!-- Wed Aug 24 22:04:03 2016 -->
 <table>
 <tr>
 <th>
@@ -3354,7 +3354,7 @@ Marshall Islands
 A large number of misspelled eventtypes was present. The mapping below has been used to create uniform event types.
 
 <!-- html table generated in R 3.3.1 by xtable 1.8-2 package -->
-<!-- Tue Aug 23 01:46:11 2016 -->
+<!-- Wed Aug 24 22:04:03 2016 -->
 <table>
 <tr>
 <th>
@@ -11185,119 +11185,119 @@ Wind
 
 ### BGN\_RANGE
 
-`BGN_RANGE` is a numeric variable. It contains 272 unique values ranging from 0 to 3749.
+`BGN_RANGE` is a numeric variable of which the meaning is unknown. It contains 272 unique values ranging from 0 to 3749.
 
 ### BGN\_AZI
 
-`BGN_AZI` is a character variable describing the azimuth
+`BGN_AZI` is a character variable describing the azimuth of the trajectory of the weather event.
 
 ### BGN\_LOCATI
 
-`BGN_LOCATI`
+`BGN_LOCATI` is a character variable giving a brief description of the starting location of the weather event.
 
 ### END\_DATE
 
-`END_DATE`
+`END_DATE` is a date variable ranging from 1986-04-10 until 2011-11-30, with 243411 missing values. See also the notes on [BGN\_DATE](#bgn_date).
 
 ### END\_TIME
 
-`END_TIME`
+`END_TIME` is a time variable describing the end time of the weather event.
 
 ### COUNTY\_END
 
-`COUNTY_END`
+`COUNTY_END` is the county code of the county in which the event ended. In this dataset it is all 0.
 
 ### COUNTYENDN
 
-`COUNTYENDN`
+`COUNTYENDN` is the name of the county in which the weather event ended, with only missing values.
 
 ### END\_RANGE
 
-`END_RANGE`
+`END_RANGE` is a numeric variable of which the meaning is unknown. It contains 266 unique values ranging from 0 to 925.
 
 ### END\_AZI
 
-`END_AZI`
+`END_AZI` is the azimuth of the trajectory at the moment the weather event ended.
 
 ### END\_LOCATI
 
-`END_LOCATI`
+`END_LOCATI` is a character variable describing the location at which the event ended.
 
 ### LENGTH
 
-`LENGTH`
+`LENGTH` is a numeric variable describing the length, in miles, of the path of a tornado, and ranges from 0 to 2315.
 
 ### WIDTH
 
-`WIDTH`
+`WIDTH` is a numeric variable describing the width, in yards, of the path of a tornado, and ranges from 0 to 4400.
 
 ### F
 
-`F`
+`F` is a numeric variable ranging from 0 to 5, with 843563 missing values. It describes the force of a tornado using the Enhanced Fujita scale.
 
 ### MAG
 
-`MAG`
+`MAG` is a numeric variable ranging from 0 to 22000. It is unknown what this variable describes, although it seems to describe the magnitude of an event, with unknown units.
 
 ### FATALITIES
 
-`FATALITIES` fatalities
+`FATALITIES` is a numeric variable ranging from 0 to 583, that denotes the number of fatal victims caused directly or indirectly by the event.
 
 ### INJURIES
 
-`INJURIES` injuries
+`INJURIES` is a numeric variable ranging from 0 to 1700 which denotes the number of injured victims caused directly or indirectly by the event.
 
 ### PROPDMG
 
-`PROPDMG` property damage
+`PROPDMG` is a numeric variable ranging from 0 to 5000, and describes the total damages in US dollars to properties caused by the weather event. Note that the magnitude of the variable can be altered by the [PROPDMGEXP](#propdmgexp) variable.
 
 ### PROPDMGEXP
 
-`PROPDMGEXP` property damage expense magnitude
+`PROPDMGEXP` is a character variable that describes the magnitude of the [PROPDMG](#propdmg) variable. According to the [documentation](https://d396qusza40orc.cloudfront.net/repdata%2Fpeer2_doc%2Fpd01016005curr.pdf) (page 12) it should only contain values "", "K", "M", "B", for dollars, thousands of dollars, millions of dollars, and billions of dollars, respectively. It does however contain a number of other characters which are undocumented.
 
 ### CROPDMG
 
-`CROPDMG` crop damage
+`CROPDMG` is a numeric variable ranging from 0 to 990, describing the damages to crops in US dollars. The magnitude of the value can be altered by the [CROPDMGEXP](#cropdmgexp) variable.
 
 ### CROPDMGEXP
 
-`CROPDMGEXP` crop damage expense magnitude
+`CROPDMGEXP` is a character variable that describes the magnitude of the [CROPDMG](#cropdmg) variable. The same notes apply to this variable as to the [PROPDMGEXP](#propdmgexp) variable.
 
 ### WFO
 
-`WFO`
+`WFO` is a character variable that denotes the responsible Weather Forecasting Office.
 
 ### STATEOFFIC
 
-`STATEOFFIC`
+`STATEOFFIC` is a character variable that denotes a state and region name. Although the exact meaning is unclear it is probable that it signifies the regional office within the state that was responsible for the report.
 
 ### ZONENAMES
 
-`ZONENAMES`
+`ZONENAMES` is a character variable describing the zonenames along the trajectory of the weather event.
 
 ### LATITUDE
 
-`LATITUDE`
+`LATITUDE` is a numeric variable ranging from 0 to 9706, with 47 missing values. It describes the latitude in hundreds of degrees north of the equator at which the event started.
 
 ### LONGITUDE
 
-`LONGITUDE`
+`LONGITUDE` is a numeric variable ranging from -14451 to 17124, with 0 missing values. It describes the longitude in hundreds of degrees at which the event started. As most of the values are centered around 10000, or 100 degrees, it is probable that it describes the longitude in degrees *west* of the 0 meridian.
 
 ### LATITUDE\_E
 
-`LATITUDE_E`
+`LATITUDE_E` is a numeric variable ranging from 0 to 9706, with 40 missing values. It describes the latitude in hundreds of degrees north of the equator at which the event started.
 
 ### LONGITUDE\_
 
-`LONGITUDE_`
+`LONGITUDE_` is a numeric variable ranging from -14455 to 106220, with 0 missing values. It describes the longitude in hundreds of degrees at which the event started. As with the [starting longitude](#longitude), most of the values are centered around 10000, or 100 degrees, it is probable that it describes the longitude in degrees *west* of the 0 meridian.
 
 ### REMARKS
 
-`REMARKS`
+`REMARKS` is a character variable containing remarks on the event, as well as the event and episode narratives.
 
 ### REFNUM
 
-`REFNUM`
+`REFNUM` is a numeric variable ranging from 1 to 902300, with the recordnumber within the dataset.
 
 Preprocessed data
 -----------------
@@ -11306,38 +11306,18 @@ Preprocessed data
 
 `event.type.major` is a factor variable containing uniform event types, based on the original [EVTYPE](#evtype) and the listed transformations. They contain only the part before the first "/" in the original variable. `event.type.major` contains 484 unique values, ranging from "Abnormally dry" to "Winter weather mix".
 
-### event.type.minor
-
-`event.type.minor` is a factor variable containing the minor event types, based on the original [EVTYPE](#evtype) and the listed transformations. `event.type.minor` contains 98 unique values, ranging from "Awning" to "Winter storm".
-
-### region
-
-`region` is a factor variable containing the region in which the weather event occurred. For the most regions this is a state name, but several non-state regions have been identified as well. The data is based on the [STATE](#state) variable, see the corresponding section for the mapping from state code to region name.
-
-### begin.date
-
-`begin.date` is a POSIXct object containing the date and time at the start of the weather event.
-
-### begin.county
-
-### begin.latitude
-
-`begin.latitude` is a numeric variable describing the latitude at which the weather event started. It ranges from 7.06 to 70.25.
-
-### begin.longitude
-
-### end.date
-
-### end.county
-
-### end.latitude
-
-### end.longitude
-
 ### fatalities
+
+`fatalities` describes the number of people perished as either a direct or indirect effect of the weather event. It is a numeric variable ranging from 0 to 583.
 
 ### injuries
 
+`injuries` describes the number of people injured as either a direct or indirect effect of the weather event. It is a numeric variable ranging from 0 to 1700.
+
 ### property.damages
 
+`property.damages` expresses the damages to properties in US dollars. It is a numeric variable ranging from $0.00 to $115 billion.
+
 ### crop.damages
+
+`crop.damages` expresses the damages to crops in US dollars. It is a numeric variable ranging from $0.00 to $5 billion.
