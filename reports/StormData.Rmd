@@ -6,7 +6,8 @@ output:
     html_document:
       toc: yes
       toc_float: true
-      theme: "cerulean"
+      theme: cerulean
+      highlight: tango
     github_document:
       toc: yes
 ---
@@ -165,8 +166,14 @@ The final dataset has dimensions `r paste(dim(data), collapse = ' by ')`, and
 contains `r sum(!complete.cases(data))` observations with missing values.
 
 ```{r summary, results='asis'}
-print(xtable(summary(data)), type = "html", include.rownames = FALSE,
-      sanitize.colnames.function = function(x){gsub('( )+', ' ', x)})
+html <- print(xtable(summary(data)), type = "html", include.rownames = FALSE,
+              sanitize.colnames.function = function(x){gsub('( )+', ' ', x)},
+              html.table.attributes = "", print.results = FALSE)
+html %<>%
+    gsub(':', '</td><td>', ., fixed = TRUE) %>%
+    gsub('<td>', '<td style="padding: 3px">', ., fixed = TRUE) %>%
+    gsub('<th>', '<th colspan="2">', ., fixed = TRUE)
+cat(html)
 ```
 
 ## 2. Results
@@ -246,8 +253,9 @@ personal %>%
     # Rotate the labels on the x-axis
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
     # Set the labels for the legend
-    scale_fill_discrete(name = "Type of victim",
-                        labels = c("Fatalities", "Injuries")) +
+    scale_fill_brewer(palette = "Set1",
+                      name = "Type of victim",
+                      labels = c("Fatalities", "Injuries")) +
     # Add labels to the plot
     labs(title = "Top 10 weather event types, ranked by total number of victims",
          x = "Major event type",
@@ -300,9 +308,9 @@ financial %>%
     facet_grid(func ~ ., scales = "free_y")  +
     theme(axis.text.x = element_text(angle = 90, vjust = 0.5, hjust = 1)) +
     scale_y_log10() +
-    scale_fill_discrete(name = "Type of damages"
-                        , labels = c("Crops", "Properties")
-                        ) +
+    scale_fill_brewer(palette = "Set1",
+                      name = "Type of damages",
+                      labels = c("Crops", "Properties")) +
     coord_cartesian(xlim = c(0.8, 10.2)) +
     annotation_logticks(sides = "rl", alpha = 0.3) +
     labs(title = "Top 10 weather event types, ranked by total damages",
