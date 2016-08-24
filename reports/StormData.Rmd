@@ -13,7 +13,12 @@ output:
 ---
 
 ```{r setup, include=FALSE}
-knitr::opts_knit$set(root.dir = file.path(getwd(), '..'))
+# Construct the path containing the main project directory, rmarkdown has some
+#  inconsistent working directory settings
+path <- gsub('StormData/?$', '', gsub('reports/?$', '', getwd()))
+# stop(path)
+# Now set root.dir to the main project directory 
+knitr::opts_knit$set(root.dir = file.path(path, 'StormData'))
 knitr::opts_chunk$set(echo = TRUE,
                       cache.path = 'cache')
 config.base.url <- 'https://github.com/Hugovdberg/StormData/blob/master/'
